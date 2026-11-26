@@ -65,12 +65,15 @@ td.n,th.n{text-align:right}
 .req{color:var(--pink)}
 .otable td{vertical-align:top;font-size:13px}
 .otable h3{margin:18px 0 8px}
+.shopbox{max-width:520px;margin:10px auto 0;background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px;line-height:1.6}
+.shopbox:empty{display:none}
 </style>
 </head>
 <body>
 <header>
   <h1>🌸 꽃집 운영 통합 지원 플랫폼</h1>
   <p>손님이 꽃을 담아 보내면, 사장님만 볼 수 있는 매입 체크표로 모입니다</p>
+  <div id="shopInfo" class="shopbox"></div>
 </header>
 <nav>
   <button data-tab="browse" class="on">① 꽃 탐색·추천</button>
@@ -140,6 +143,7 @@ td.n,th.n{text-align:right}
         <button class="btn sub" id="logoutBtn" style="margin-left:auto">로그아웃</button>
       </div>
       <div id="ownerMsg" class="msg"></div>
+      <div id="shareLink" class="note" style="word-break:break-all;margin-bottom:8px"></div>
       <div id="ownerTable"></div>
       <div id="orderList" class="otable"></div>
       <p class="note">※ 추천 매입량은 실제 판매 기록으로 계산한 예측이 아니라, 보관 난이도별 여유율(쉬움 1.2 / 보통 1.1 / 어려움 1.0)을 곱해 올림한 규칙 기반 참고값입니다.<br>위험도: 추천량 대비 ±20% 이내 적당, 초과 시 버릴 위험, 미달 시 부족 위험(보관 어려운 꽃은 +10%만 넘어도 버릴 위험).</p>
@@ -344,10 +348,54 @@ $("orderForm").addEventListener("submit", e => { e.preventDefault(); sendOrder()
 $("oReq").addEventListener("input", () => { $("reqCnt").textContent = $("oReq").value.length; });
 $("orderForm").addEventListener("reset", () => { $("reqCnt").textContent = 0; });
 
+import * as FS from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ---------- 가게(shop) 구분 ---------- */
+const curShopId = new URLSearchParams(location.search).get("shop");
+let shopOk = false, sheetUid = null, saveTimer = null;
+
+async function loadShop(){
+  const box = $("shopInfo");
+  if(!configured) return;
+  if(!curShopId){
+    box.innerHTML = "<b>가게 주소로 접속해 주세요</b><br><span class=\"note\">사장님께 받은 주소(…?shop=…)로 들어오면 가게 정보가 표시됩니다. (사장님은 아래 ③ 탭에서 로그인하세요)</span>";
+    return;
+  }
+  try{
+    const s = await FS.getDoc(FS.doc(db,"shops",curShopId));
+    if(!s.exists()){ box.textContent = "존재하지 않는 가게 주소입니다."; return; }
+    const d = s.data(); shopOk = true;
+    box.innerHTML = `<b>🏠 ${esc(d.name||"")}</b><br>📍 ${esc(d.address||"")}<br><span class="note">${esc(d.desc||"")}</span>`;
+  }catch(err){
+    console.error(err);
+    box.textContent = "가게 정보를 불러오지 못했어요: " + (err.code||err.message);
+  }
+}
+
+/* ---------- 내 주문량·메모 저장(사장님 본인만) ---------- */
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveSheetNow, 800); }
+async function saveSheetNow(){
+  const u = auth.currentUser; if(!u) return;
+  const oq = {}; Object.keys(orderQty).forEach(k => { if(orderQty[k]!==undefined && !isNaN(orderQty[k])) oq[k] = orderQty[k]; });
+  const mm = {}; Object.keys(memo).forEach(k => { if(memo[k]) mm[k] = String(memo[k]).slice(0,200); });
+  try{ await FS.setDoc(FS.doc(db,"sheets",u.uid), {orderQty:oq, memo:mm, updatedAt:FS.serverTimestamp()}); }
+  catch(err){ console.error(err); $("ownerMsg").className="msg err"; $("ownerMsg").textContent = "저장 실패: " + (err.code||err.message); }
+}
+async function loadSheet(uid){
+  if(sheetUid === uid) return;
+  try{
+    const s = await FS.getDoc(FS.doc(db,"sheets",uid));
+    if(s.exists()){ const d = s.data(); orderQty = d.orderQty||{}; memo = d.memo||{}; }
+    else { orderQty = {}; memo = {}; }
+    sheetUid = uid;
+  }catch(err){ console.error(err); }
+}
+
 async function sendOrder(){
   const msg = $("sendMsg");
   const fail = t => { msg.className="msg err"; msg.textContent=t; };
   if(!configured) return fail("firebaseConfig가 설정되지 않았습니다.");
+  if(!curShopId || !shopOk) return fail("가게 주소(?shop=...)로 접속해야 전달할 수 있어요.");
   const items = Object.entries(cart).map(([id,qty]) => ({id, name:FMAP[id].name, qty}));
   if(!items.length) return fail("장바구니가 비어 있어요.");
   const name = $("oName").value.trim();
@@ -362,7 +410,7 @@ async function sendOrder(){
   if(method==="배달" && !addr) return fail("배달 주소를 입력해 주세요.");
   if(!date) return fail(method==="배달" ? "배달 받을 날짜를 선택해 주세요." : "픽업 날짜를 선택해 주세요.");
   if(date < todayStr()) return fail("오늘 이후의 날짜를 선택해 주세요.");
-  const data = { items, name, phone, kind:kindEl.value, method, pickupDate:date, createdAt: serverTimestamp() };
+  const data = { items, name, phone, kind:kindEl.value, method, pickupDate:date, shopId:curShopId, createdAt: serverTimestamp() };
   if(method==="배달") data.address = addr;
   const reqNote = $("oReq").value.trim();
   if(reqNote.length>300) return fail("추가 요청사항은 300자 이내로 적어 주세요.");
@@ -385,7 +433,7 @@ if (configured) {
     loggedIn = !!user;
     $("loginBox").style.display = loggedIn ? "none" : "block";
     $("ownerBody").style.display = loggedIn ? "block" : "none";
-    if (loggedIn) loadOrders(); else { $("ownerTable").innerHTML = ""; $("orderList").innerHTML = ""; }
+    if (loggedIn) loadOrders(); else { sheetUid = null; orderQty = {}; memo = {}; $("ownerTable").innerHTML = ""; $("orderList").innerHTML = ""; $("shareLink").textContent = ""; }
   });
 }
 $("loginBox").addEventListener("submit", async e => {
@@ -405,11 +453,18 @@ $("reloadBtn").addEventListener("click", loadOrders);
 
 async function loadOrders(){
   const m = $("ownerMsg"); m.className="msg"; m.textContent="불러오는 중...";
+  const uid = auth.currentUser && auth.currentUser.uid;
+  if(!uid) return;
   try{
-    const snap = await getDocs(collection(db,"orders"));
+    let link = "손님용 주소: " + location.origin + location.pathname + "?shop=" + uid;
+    const sh = await FS.getDoc(FS.doc(db,"shops",uid));
+    if(!sh.exists()) link += "  ⚠️ shops 컬렉션에 이 계정(UID)의 가게 문서가 없습니다.";
+    $("shareLink").textContent = link;
+    const snap = await getDocs(FS.query(collection(db,"orders"), FS.where("shopId","==",uid)));
+    await loadSheet(uid);
     demand = {}; orderCount = snap.size; orders = [];
     snap.forEach(d => {
-      const o = d.data(); orders.push(o);
+      const o = d.data(); orders.push({...o, _id:d.id});
       (o.items||[]).forEach(it => {
         if(!demand[it.id]) demand[it.id] = {name:it.name, qty:0};
         demand[it.id].qty += Number(it.qty)||0;
@@ -421,7 +476,7 @@ async function loadOrders(){
   }catch(err){
     console.error(err);
     m.className="msg err";
-    m.textContent = "불러오기 실패: " + (err.code||err.message) + " (사장님 UID가 규칙과 같은지 확인하세요)";
+    m.textContent = "불러오기 실패: " + (err.code||err.message);
   }
 }
 function fmtPhone(p){
@@ -432,12 +487,41 @@ function fmtPhone(p){
 }
 function renderOrders(){
   if(!orders.length){ $("orderList").innerHTML = ""; return; }
-  $("orderList").innerHTML = `<h3>📋 접수된 주문서 (날짜 빠른 순)</h3><div class="wrap"><table><thead><tr><th>날짜</th><th>이름</th><th>전화번호</th><th>종류</th><th>수령 방식</th><th>품목</th><th>추가 요청사항</th></tr></thead><tbody>` +
-    orders.map(o => `<tr><td>${esc(o.pickupDate||"-")}</td><td>${esc(o.name||"-")}</td><td>${esc(fmtPhone(o.phone))}</td><td>${esc(o.kind||"-")}</td>
+  $("orderList").innerHTML = `<h3>📋 접수된 주문서 (날짜 빠른 순)</h3>
+    <div class="bar"><label style="font-size:14px;cursor:pointer"><input type="checkbox" id="ordAll" style="width:20px;height:20px;vertical-align:middle"> 전체 선택</label>
+    <button type="button" class="btn sub" id="delSelBtn" disabled style="color:var(--red);border-color:var(--red)">🗑 선택 삭제 (0)</button></div>
+    <div class="wrap"><table><thead><tr><th style="width:40px">선택</th><th>날짜</th><th>이름</th><th>전화번호</th><th>종류</th><th>수령 방식</th><th>품목</th><th>추가 요청사항</th></tr></thead><tbody>` +
+    orders.map(o => `<tr><td><input type="checkbox" data-del="${esc(o._id)}" aria-label="주문 선택" style="width:20px;height:20px"></td><td>${esc(o.pickupDate||"-")}</td><td>${esc(o.name||"-")}</td><td>${esc(fmtPhone(o.phone))}</td><td>${esc(o.kind||"-")}</td>
       <td>${esc(o.method||"-")}${o.method==="배달" && o.address ? "<br>" + esc(o.address) : ""}</td>
       <td>${(o.items||[]).map(it => esc(it.name)+" × "+esc(it.qty)).join("<br>")}</td><td style="white-space:pre-wrap;min-width:140px">${esc(o.request||"-")}</td></tr>`).join("") +
     `</tbody></table></div>`;
 }
+function updDel(){
+  const boxes = document.querySelectorAll("[data-del]");
+  const n = document.querySelectorAll("[data-del]:checked").length;
+  const b = $("delSelBtn"); if(b){ b.disabled = !n; b.textContent = "🗑 선택 삭제 (" + n + ")"; }
+  const all = $("ordAll"); if(all) all.checked = n>0 && n===boxes.length;
+}
+$("orderList").addEventListener("change", e => {
+  const t = e.target;
+  if(t.id==="ordAll") document.querySelectorAll("[data-del]").forEach(c => c.checked = t.checked);
+  updDel();
+});
+$("orderList").addEventListener("click", async e => {
+  if(e.target.id!=="delSelBtn") return;
+  const ids = [...document.querySelectorAll("[data-del]:checked")].map(c => c.dataset.del);
+  if(!ids.length) return;
+  if(!confirm(ids.length + "건의 주문을 삭제할까요? 되돌릴 수 없습니다.")) return;
+  const m = $("ownerMsg"); e.target.disabled = true;
+  try{
+    await Promise.all(ids.map(id => deleteDoc(FS.doc(db,"orders",id))));
+    loadOrders();
+  }catch(err){
+    console.error(err);
+    m.className="msg err"; m.textContent="삭제 실패: "+(err.code||err.message);
+    e.target.disabled = false;
+  }
+});
 function rec(id){
   const f = FMAP[id], q = demand[id].qty;
   const k = f ? ({"쉬움":1.2,"보통":1.1,"어려움":1.0}[f.shelf]) : 1.1;
@@ -481,13 +565,14 @@ $("ownerTable").addEventListener("input", e => {
   } else if (t.dataset.memo !== undefined){
     memo[t.dataset.memo] = t.value;
   }
+  scheduleSave();
 });
 $("clearBtn").addEventListener("click", async () => {
   if(!confirm("접수된 주문을 모두 삭제할까요? 되돌릴 수 없습니다.")) return;
   try{
-    const snap = await getDocs(collection(db,"orders"));
+    const snap = await getDocs(FS.query(collection(db,"orders"), FS.where("shopId","==",auth.currentUser.uid)));
     await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
-    orderQty = {}; memo = {};
+    orderQty = {}; memo = {}; saveSheetNow();
     loadOrders();
   }catch(err){
     $("ownerMsg").className="msg err"; $("ownerMsg").textContent="삭제 실패: "+(err.code||err.message);
@@ -506,6 +591,7 @@ $("csvBtn").addEventListener("click", () => {
 
 /* ---------- 시작 ---------- */
 renderChips(); renderFlowers(); updateCartCount(); syncMethod();
+loadShop();
 /* 브라우저 자동완성이 검색창에 로그인 이메일을 채워 넣은 경우 비움 */
 const clearKw = () => { if ($("kw").value.includes("@")) { $("kw").value = ""; renderFlowers(); } };
 setTimeout(clearKw, 300); setTimeout(clearKw, 1000);
