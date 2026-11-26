@@ -23,6 +23,6 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add market.json ai-tags.json
+          git add market.json ai-tags.json photos.json
           git diff --staged --quiet || git commit -m "경매 품목 갱신"
           git push
