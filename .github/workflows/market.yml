@@ -19,10 +19,11 @@ jobs:
         env:
           AT_SERVICE_KEY: ${{ secrets.AT_SERVICE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
       - name: 결과 저장
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add market.json ai-tags.json photos.json
+          git add market.json ai-tags.json photos.json images
           git diff --staged --quiet || git commit -m "경매 품목 갱신"
           git push
