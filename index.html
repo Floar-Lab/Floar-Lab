@@ -247,6 +247,33 @@ input.qin{-moz-appearance:textfield;appearance:textfield;text-align:center}
 .card .act{flex-wrap:wrap}`;
   document.head.appendChild(st); }
 
+/* ---------- 사장님 탭 분리: 🌷 오늘 판매 꽃 / 📋 주문서·매입 체크표 ---------- */
+{
+  const ownBody = $("ownerBody"), saleBox = $("saleBox");
+  const ownSec = ownBody ? ownBody.closest("section") : null;
+  const ownBtn = ownSec ? document.querySelector(`nav button[data-tab="${ownSec.id}"]`) : null;
+  if (ownSec && ownBtn && saleBox) {
+    const sec = document.createElement("section");
+    sec.id = "saleTab";
+    sec.innerHTML = `<div id="saleGate" class="empty">🔒 사장님 로그인이 필요해요.<br><button type="button" class="btn" id="saleGoLogin" style="margin-top:10px">로그인하러 가기</button></div><div id="saleWrap" style="display:none"></div>`;
+    ownSec.before(sec);
+    $("saleWrap").appendChild(saleBox);   // 판매 꽃 선택 영역을 새 탭으로 이동
+
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.dataset.tab = "saleTab"; btn.textContent = "🌷 오늘 판매 꽃 🔒";
+    ownBtn.before(btn);
+    ownBtn.textContent = "📋 주문서·매입 체크표 🔒";
+
+    const gate = u => {
+      $("saleGate").style.display = u ? "none" : "block";
+      $("saleWrap").style.display = u ? "block" : "none";
+    };
+    gate(auth && auth.currentUser);
+    if (auth) onAuthStateChanged(auth, gate);
+    $("saleGoLogin").addEventListener("click", () => ownBtn.click());
+  }
+}
+
 /* ---------- 탭 ---------- */
 document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x===b));
@@ -281,7 +308,7 @@ function renderFlowers(){
     return `
     <div class="card">
       ${pu ? `<img src="${esc(pu)}" alt="${esc(f.name)}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:#f3eef0" onerror="this.style.display='none'">` : `<div class="em">${esc(f.em)}</div>`}
-      ${pu && pg ? `<div class="note" style="font-size:11px"><a href="${esc(pg)}" target="_blank" rel="noopener noreferrer">사진: 위키백과</a></div>` : ""}
+      ${pu && pg ? `<div class="note" style="font-size:11px"><a href="${esc(pg)}" target="_blank" rel="noopener noreferrer">사진 출처</a></div>` : ""}
       <h3>${esc(f.name)}</h3>
       <div>${f.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}${f.season ? `<span class="tag g">${esc(f.season)}</span>` : ""}</div>
       <p>${info}</p>
