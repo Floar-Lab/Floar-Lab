@@ -144,6 +144,7 @@ td.n,th.n{text-align:right}
       </div>
       <div id="ownerMsg" class="msg"></div>
       <div id="shareLink" class="note" style="word-break:break-all;margin-bottom:8px"></div>
+      <div id="saleBox" style="margin-bottom:14px"></div>
       <div id="ownerTable"></div>
       <div id="orderList" class="otable"></div>
       <p class="note">※ 추천 매입량은 실제 판매 기록으로 계산한 예측이 아니라, 보관 난이도별 여유율(쉬움 1.2 / 보통 1.1 / 어려움 1.0)을 곱해 올림한 규칙 기반 참고값입니다.<br>위험도: 추천량 대비 ±20% 이내 적당, 초과 시 버릴 위험, 미달 시 부족 위험(보관 어려운 꽃은 +10%만 넘어도 버릴 위험).</p>
@@ -213,13 +214,16 @@ const RAW = [
  ["hyacinth","히아신스","💜","보라·분홍","겸손한 사랑","은은함,설렘","겨울","보통"]
 ];
 const FL = RAW.map(r => ({id:r[0],name:r[1],em:r[2],color:r[3],meaning:r[4],tags:r[5].split(","),season:r[6],shelf:r[7]}));
-const FMAP = Object.fromEntries(FL.map(f => [f.id,f]));
+const FSTORE = Object.fromEntries(FL.map(f => [f.id,f]));
+/* 목록에 없는 id(옛 주문·다른 날 목록)가 와도 화면이 깨지지 않도록 기본값을 돌려줌 */
+const FMAP = new Proxy(FSTORE, { get(t,k){ if (typeof k !== "string") return t[k]; return t[k] || {id:k,name:k.replace(/^m_/,""),em:"🌸",color:"",meaning:"",tags:[],season:"",shelf:"보통"}; } });
 
 /* ---------- 현재 계절 ---------- */
 const month = new Date().getMonth()+1;
 const SEASON = month>=3&&month<=5?"봄":month>=6&&month<=8?"여름":month>=9&&month<=11?"가을":"겨울";
-const AVAIL = FL.filter(f => f.season==="연중" || f.season===SEASON);
-document.getElementById("seasonInfo").textContent = `현재 계절: ${SEASON} · 매입 가능한 꽃 ${AVAIL.length}종만 표시`;
+let AVAIL = [];            // 사장님이 오늘 업로드한 판매 꽃 (손님에게 보이는 목록)
+let saleDateStr = "", saleLoaded = false;
+{ const el = document.getElementById("seasonInfo"); if (el) el.textContent = "오늘 판매 품목을 불러오는 중…"; }
 
 /* ---------- 상태 ---------- */
 let cart = {};          // {id: qty}
@@ -251,8 +255,10 @@ document.querySelectorAll("nav button").forEach(b => b.addEventListener("click",
 }));
 
 /* ---------- ① 탐색 ---------- */
-const allTags = [...new Set(AVAIL.flatMap(f => f.tags))];
+let allTags = [];
 function renderChips(){
+  allTags = [...new Set(AVAIL.flatMap(f => f.tags))];
+  if (activeTag && !allTags.includes(activeTag)) activeTag = "";
   $("chips").innerHTML = `<span class="chip ${activeTag===""?"on":""}" data-t="">전체</span>` +
     allTags.map(t => `<span class="chip ${activeTag===t?"on":""}" data-t="${esc(t)}">#${esc(t)}</span>`).join("");
 }
@@ -261,21 +267,29 @@ $("chips").addEventListener("click", e => {
   activeTag = c.dataset.t; renderChips(); renderFlowers();
 });
 $("kw").addEventListener("input", renderFlowers);
+const safeUrl = u => /^https:\/\//.test(String(u||"")) ? String(u) : "";
 function renderFlowers(){
   const k = $("kw").value.trim();
+  if(!saleLoaded){ $("flowerGrid").innerHTML = `<div class="empty">오늘 판매 품목을 불러오는 중이에요…</div>`; return; }
+  if(!AVAIL.length){ $("flowerGrid").innerHTML = `<div class="empty">🌷 오늘 판매 품목을 준비 중이에요.<br>사장님이 올리면 이곳에 나타나요.</div>`; return; }
   const list = AVAIL.filter(f =>
     (!activeTag || f.tags.includes(activeTag)) &&
     (!k || f.tags.some(t => t.includes(k)) || f.name.includes(k) || f.meaning.includes(k)));
-  $("flowerGrid").innerHTML = list.length ? list.map(f => `
+  $("flowerGrid").innerHTML = list.length ? list.map(f => {
+    const pu = safeUrl(f.photo), pg = safeUrl(f.photoPage), id = esc(f.id);
+    const info = [f.meaning ? `꽃말: ${esc(f.meaning)}` : "", f.color ? `색: ${esc(f.color)}` : "", `보관: ${esc(f.shelf||"보통")}`].filter(Boolean).join("<br>");
+    return `
     <div class="card">
-      <div class="em">${f.em}</div>
-      <h3>${f.name}</h3>
-      <div>${f.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}<span class="tag g">${f.season}</span></div>
-      <p>꽃말: ${f.meaning}<br>색: ${f.color}<br>보관: ${f.shelf}</p>
-      <div class="act"><div class="q stp"><button type="button" data-sm="${f.id}" aria-label="${f.name} 수량 줄이기">−</button><input type="number" class="qin" min="1" max="999" step="1" inputmode="numeric" data-qin="${f.id}" value="${qtyDraft[f.id]||1}" aria-label="${f.name} 수량"><button type="button" data-sp="${f.id}" aria-label="${f.name} 수량 늘리기">＋</button></div>
-      <button class="btn" data-add="${f.id}">🛒 담기</button></div>
+      ${pu ? `<img src="${esc(pu)}" alt="${esc(f.name)}" loading="lazy" referrerpolicy="no-referrer" style="width:100%;height:150px;object-fit:cover;border-radius:10px;background:#f3eef0" onerror="this.style.display='none'">` : `<div class="em">${esc(f.em)}</div>`}
+      ${pu && pg ? `<div class="note" style="font-size:11px"><a href="${esc(pg)}" target="_blank" rel="noopener noreferrer">사진: 위키백과</a></div>` : ""}
+      <h3>${esc(f.name)}</h3>
+      <div>${f.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}${f.season ? `<span class="tag g">${esc(f.season)}</span>` : ""}</div>
+      <p>${info}</p>
+      <div class="act"><div class="q stp"><button type="button" data-sm="${id}" aria-label="${esc(f.name)} 수량 줄이기">−</button><input type="number" class="qin" min="1" max="999" step="1" inputmode="numeric" data-qin="${id}" value="${qtyDraft[f.id]||1}" aria-label="${esc(f.name)} 수량"><button type="button" data-sp="${id}" aria-label="${esc(f.name)} 수량 늘리기">＋</button></div>
+      <button class="btn" data-add="${id}">🛒 담기</button></div>
       <div class="note">${cart[f.id]?`담은 수량 ${cart[f.id]}`:""}</div>
-    </div>`).join("") : `<div class="empty">조건에 맞는 꽃이 없어요.</div>`;
+    </div>`;
+  }).join("") : `<div class="empty">조건에 맞는 꽃이 없어요.</div>`;
 }
 $("flowerGrid").addEventListener("click", e => {
   const t = e.target;
@@ -352,6 +366,119 @@ import * as FS from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firesto
 
 /* ---------- 가게(shop) 구분 ---------- */
 const curShopId = new URLSearchParams(location.search).get("shop");
+
+/* ---------- 오늘 판매 꽃: 사장님이 market.json 30개 중 고르고 업로드 → 손님 화면에 노출 ---------- */
+const mkId = name => "m_" + String(name).replace(/["'\\<>&]/g,"").trim();
+let mktItems = [], mktUpdated = "", saleSel = {};
+
+function applySale(list){
+  AVAIL = (list||[]).map(x => {
+    const f = { id:String(x.id), name:String(x.name||""), em:"🌸", color:"", meaning:String(x.meaning||""),
+      tags:Array.isArray(x.tags) ? x.tags.map(String) : [], season:"", shelf:String(x.shelf||"보통"),
+      photo:String(x.photo||""), photoPage:String(x.photoPage||"") };
+    FSTORE[f.id] = f; return f;
+  });
+  saleLoaded = true;
+  const info = document.getElementById("seasonInfo");
+  if (info) info.textContent = AVAIL.length ? `🌷 오늘 판매 ${AVAIL.length}종${saleDateStr ? " · " + saleDateStr + " 기준" : ""}` : "오늘 판매 품목을 준비 중이에요";
+  renderChips(); renderFlowers();
+}
+
+/* 손님: 가게 문서의 saleItems만 읽음 (market.json은 읽지 않음) */
+async function loadSaleItems(){
+  if (!configured || !curShopId){ saleDateStr = ""; applySale([]); return; }
+  try{
+    const s = await FS.getDoc(FS.doc(db,"shops",curShopId));
+    const d = s.exists() ? s.data() : {};
+    saleDateStr = d.saleDate || "";
+    applySale(Array.isArray(d.saleItems) ? d.saleItems : []);
+  }catch(err){ console.error(err); saleDateStr = ""; applySale([]); }
+}
+
+/* 사장님: market.json 30개 목록 + 현재 업로드 상태 */
+const SRC_LABEL = {manual:"사람 검수", ai:"AI 초안", none:"태그 없음"};
+async function loadOwnerSale(user){
+  const box = $("saleBox"); if(!box) return;
+  box.innerHTML = `<div class="note">오늘의 거래 목록을 불러오는 중…</div>`;
+  let m;
+  try{
+    const r = await fetch("market.json?ts=" + Date.now(), {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    m = await r.json();
+  }catch(err){ box.innerHTML = `<div class="msg err">market.json을 불러오지 못했어요: ${esc(err.message)}</div>`; return; }
+  mktUpdated = m.updatedAt || "";
+  mktItems = Object.entries(m.items || {}).map(([name,v]) => ({...v, id:mkId(name), name})).sort((a,b) => (a.rank||999) - (b.rank||999));
+  saleSel = {};
+  try{
+    const s = await FS.getDoc(FS.doc(db,"shops",user.uid));
+    const d = s.exists() ? s.data() : {};
+    (Array.isArray(d.saleItems) ? d.saleItems : []).forEach(x => { saleSel[x.id] = true; });
+  }catch(err){ console.error(err); }
+  renderSaleBox();
+}
+function updSaleBtn(){
+  const n = Object.values(saleSel).filter(Boolean).length;
+  const b = $("saleUpBtn"); if(b) b.textContent = `📤 손님에게 업로드 (${n}종)`;
+}
+function renderSaleBox(){
+  const box = $("saleBox"); if(!box) return;
+  if(!mktItems.length){ box.innerHTML = `<div class="empty">아직 거래 목록(market.json)이 비어 있어요.</div>`; return; }
+  let upd = "-"; try{ if(mktUpdated) upd = new Date(mktUpdated).toLocaleString("ko-KR"); }catch(_){}
+  const rows = mktItems.map(x => {
+    const pu = safeUrl(x.photo);
+    return `<tr>
+      <td><input type="checkbox" data-sale="${esc(x.id)}" ${saleSel[x.id]?"checked":""} aria-label="${esc(x.name)} 판매" style="width:20px;height:20px"></td>
+      <td>${pu ? `<img src="${esc(pu)}" alt="" loading="lazy" referrerpolicy="no-referrer" width="44" height="44" style="object-fit:cover;border-radius:8px" onerror="this.style.display='none'">` : "—"}</td>
+      <td class="n">${esc(x.rank ?? "")}</td>
+      <td><b>${esc(x.name)}</b></td>
+      <td>${(x.tags||[]).map(t => `<span class="tag">#${esc(t)}</span>`).join("") || "-"}</td>
+      <td class="n">${esc(x.qty ?? "-")}</td>
+      <td class="n">${x.avgAmt ? Number(x.avgAmt).toLocaleString() + "원" : "-"}</td>
+      <td>${esc(x.shelf||"보통")}</td>
+      <td>${esc(SRC_LABEL[x.tagSource] || "-")}</td></tr>`;
+  }).join("");
+  box.innerHTML = `
+    <h3>🛒 오늘 판매할 꽃 고르기</h3>
+    <p class="note">시장 경매 거래 상위 ${mktItems.length}종 · 거래 목록 갱신: ${esc(upd)}<br>업로드하기 전에는 손님 화면이 바뀌지 않아요. 출처가 'AI 초안'인 꽃은 꽃말·보관 난이도가 틀릴 수 있으니 확인해 주세요.</p>
+    <div class="bar"><button type="button" class="btn sub" data-sel="all">전체 켜기</button>
+      <button type="button" class="btn sub" data-sel="none">전체 끄기</button>
+      <button type="button" class="btn" id="saleUpBtn">📤 손님에게 업로드 (0종)</button></div>
+    <div id="saleMsg" class="msg"></div>
+    <div class="wrap"><table><thead><tr><th>판매</th><th>사진</th><th class="n">순위</th><th>이름</th><th>태그</th><th class="n">거래량</th><th class="n">평균가</th><th>보관</th><th>태그 출처</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  updSaleBtn();
+}
+async function uploadSale(btn){
+  const user = auth && auth.currentUser, msg = $("saleMsg");
+  if(!user) return;
+  const chosen = mktItems.filter(x => saleSel[x.id]);
+  if(!chosen.length && !confirm("선택한 꽃이 없어요. 손님 화면에서 모든 꽃이 사라집니다. 올릴까요?")) return;
+  const items = chosen.map(x => ({ id:x.id, name:x.name, tags:(x.tags||[]).slice(0,4).map(String), meaning:String(x.meaning||""),
+    shelf:String(x.shelf||"보통"), photo:safeUrl(x.photo), photoPage:safeUrl(x.photoPage) }));
+  btn.disabled = true;
+  try{
+    await FS.updateDoc(FS.doc(db,"shops",user.uid), { saleItems:items, saleDate:todayStr() });
+    msg.className = "msg ok"; msg.textContent = `${items.length}종을 손님에게 올렸어요. (${todayStr()} 기준)`;
+    saleDateStr = todayStr(); applySale(items);
+  }catch(err){
+    console.error(err);
+    msg.className = "msg err";
+    msg.textContent = "업로드 실패: " + (err.code || err.message) + (err.code==="not-found" ? " (shops 컬렉션에 내 UID 문서가 있는지 확인하세요)" : "");
+  }finally{ btn.disabled = false; }
+}
+$("saleBox").addEventListener("change", e => {
+  const id = e.target.dataset.sale; if(id === undefined) return;
+  saleSel[id] = e.target.checked; updSaleBtn();
+});
+$("saleBox").addEventListener("click", async e => {
+  const t = e.target;
+  if(t.dataset.sel){ mktItems.forEach(x => { saleSel[x.id] = t.dataset.sel === "all"; }); renderSaleBox(); return; }
+  if(t.id === "saleUpBtn") await uploadSale(t);
+});
+if (auth) onAuthStateChanged(auth, u => {
+  if (u) loadOwnerSale(u);
+  else { saleSel = {}; mktItems = []; $("saleBox").innerHTML = ""; }
+});
+loadSaleItems();
 let shopOk = false, sheetUid = null, saveTimer = null;
 
 async function loadShop(){
@@ -485,13 +612,20 @@ function fmtPhone(p){
   if(s.length===10) return s.slice(0,2)==="02" ? s.replace(/(\d{2})(\d{4})(\d{4})/,"$1-$2-$3") : s.replace(/(\d{3})(\d{3})(\d{4})/,"$1-$2-$3");
   return s || "-";
 }
+function fmtTs(t){
+  try{
+    const d = t && t.toDate ? t.toDate() : null; if(!d) return "-";
+    const p = n => String(n).padStart(2,"0");
+    return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"<br>"+p(d.getHours())+":"+p(d.getMinutes());
+  }catch(e){ return "-"; }
+}
 function renderOrders(){
   if(!orders.length){ $("orderList").innerHTML = ""; return; }
   $("orderList").innerHTML = `<h3>📋 접수된 주문서 (날짜 빠른 순)</h3>
     <div class="bar"><label style="font-size:14px;cursor:pointer"><input type="checkbox" id="ordAll" style="width:20px;height:20px;vertical-align:middle"> 전체 선택</label>
     <button type="button" class="btn sub" id="delSelBtn" disabled style="color:var(--red);border-color:var(--red)">🗑 선택 삭제 (0)</button></div>
-    <div class="wrap"><table><thead><tr><th style="width:40px">선택</th><th>날짜</th><th>이름</th><th>전화번호</th><th>종류</th><th>수령 방식</th><th>품목</th><th>추가 요청사항</th></tr></thead><tbody>` +
-    orders.map(o => `<tr><td><input type="checkbox" data-del="${esc(o._id)}" aria-label="주문 선택" style="width:20px;height:20px"></td><td>${esc(o.pickupDate||"-")}</td><td>${esc(o.name||"-")}</td><td>${esc(fmtPhone(o.phone))}</td><td>${esc(o.kind||"-")}</td>
+    <div class="wrap"><table><thead><tr><th style="width:40px">선택</th><th>주문일</th><th>수령 날짜</th><th>이름</th><th>전화번호</th><th>종류</th><th>수령 방식</th><th>품목</th><th>추가 요청사항</th></tr></thead><tbody>` +
+    orders.map(o => `<tr><td><input type="checkbox" data-del="${esc(o._id)}" aria-label="주문 선택" style="width:20px;height:20px"></td><td>${fmtTs(o.createdAt)}</td><td>${esc(o.pickupDate||"-")}</td><td>${esc(o.name||"-")}</td><td>${esc(fmtPhone(o.phone))}</td><td>${esc(o.kind||"-")}</td>
       <td>${esc(o.method||"-")}${o.method==="배달" && o.address ? "<br>" + esc(o.address) : ""}</td>
       <td>${(o.items||[]).map(it => esc(it.name)+" × "+esc(it.qty)).join("<br>")}</td><td style="white-space:pre-wrap;min-width:140px">${esc(o.request||"-")}</td></tr>`).join("") +
     `</tbody></table></div>`;
