@@ -203,5 +203,19 @@
     "photoPage": "https://ko.wikipedia.org/wiki/%EC%BD%9C%EB%A6%AC%ED%94%8C%EB%9D%BC%EC%9B%8C",
     "source": "wikipedia",
     "foundAt": "2026-11-26T14:18:02.051Z"
+  },
+  "델피니움": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Delphinium_elatum_var._palmatifidum_as_Delphinium_intermedium_var._palmatifidum_by_S._A._Drake._Edwards%27s_Botanical_Register_vol._24%2C_t._38_%281838%29.tif/lossless-page1-330px-Delphinium_elatum_var._palmatifidum_as_Delphinium_intermedium_var._palmatifidum_by_S._A._Drake._Edwards%27s_Botanical_Register_vol._24%2C_t._38_%281838%29.tif.png?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "제비고깔속",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%A0%9C%EB%B9%84%EA%B3%A0%EA%B9%94%EC%86%8D",
+    "source": "wikipedia",
+    "foundAt": "2026-11-26T21:51:33.065Z"
+  },
+  "절지": {
+    "photo": "images/pixabay-9061666.jpg",
+    "photoTitle": "Pixabay (44528033)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%B0%9C%EB%AF%B8-%EA%B3%A4%EC%B6%A9-%EB%94%B1%EC%A0%95%EB%B2%8C%EB%A0%88-%EA%B3%A4%EC%B6%A9-9061666/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T21:51:34.558Z"
   }
 }
