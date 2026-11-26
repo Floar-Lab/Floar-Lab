@@ -228,6 +228,17 @@ let orders = [], qtyDraft = {};
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
+/* 수량 칸: 브라우저 기본 화살표(마우스 올릴 때만 보임) 숨기고, 항상 보이는 −/＋ 버튼 사용 */
+{ const st = document.createElement("style");
+  st.textContent = `
+input.qin::-webkit-outer-spin-button,input.qin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input.qin{-moz-appearance:textfield;appearance:textfield;text-align:center}
+.q button{width:40px;height:40px;font-size:18px;line-height:1;touch-action:manipulation;cursor:pointer}
+.q input.qin{width:56px;height:40px;font-size:16px;vertical-align:middle}
+.stp{display:inline-flex;align-items:center;gap:4px}
+.card .act{flex-wrap:wrap}`;
+  document.head.appendChild(st); }
+
 /* ---------- 탭 ---------- */
 document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll("nav button").forEach(x => x.classList.toggle("on", x===b));
@@ -257,13 +268,21 @@ function renderFlowers(){
       <h3>${f.name}</h3>
       <div>${f.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}<span class="tag g">${f.season}</span></div>
       <p>꽃말: ${f.meaning}<br>색: ${f.color}<br>보관: ${f.shelf}</p>
-      <div class="act"><input type="number" class="qin" min="1" max="999" step="1" inputmode="numeric" data-qin="${f.id}" value="${qtyDraft[f.id]||1}" aria-label="${f.name} 수량">
+      <div class="act"><div class="q stp"><button type="button" data-sm="${f.id}" aria-label="${f.name} 수량 줄이기">−</button><input type="number" class="qin" min="1" max="999" step="1" inputmode="numeric" data-qin="${f.id}" value="${qtyDraft[f.id]||1}" aria-label="${f.name} 수량"><button type="button" data-sp="${f.id}" aria-label="${f.name} 수량 늘리기">＋</button></div>
       <button class="btn" data-add="${f.id}">🛒 담기</button></div>
       <div class="note">${cart[f.id]?`담은 수량 ${cart[f.id]}`:""}</div>
     </div>`).join("") : `<div class="empty">조건에 맞는 꽃이 없어요.</div>`;
 }
 $("flowerGrid").addEventListener("click", e => {
-  const id = e.target.dataset.add; if(!id) return;
+  const t = e.target;
+  const sid = t.dataset.sm || t.dataset.sp;
+  if (sid){
+    const inp = document.querySelector(`[data-qin="${sid}"]`);
+    let q = Math.floor(Number(inp.value)); if(!(q>=1)) q = 1;
+    q = t.dataset.sp ? Math.min(999, q+1) : Math.max(1, q-1);
+    inp.value = q; qtyDraft[sid] = q; return;
+  }
+  const id = t.dataset.add; if(!id) return;
   const inp = document.querySelector(`[data-qin="${id}"]`);
   let q = Math.floor(Number(inp.value)); if(!(q>=1)) q = 1;
   cart[id] = Math.min(999, (cart[id]||0) + q);
@@ -271,6 +290,11 @@ $("flowerGrid").addEventListener("click", e => {
 });
 $("flowerGrid").addEventListener("input", e => {
   if (e.target.dataset.qin) qtyDraft[e.target.dataset.qin] = e.target.value;
+});
+$("flowerGrid").addEventListener("change", e => {
+  const id = e.target.dataset.qin; if(!id) return;
+  let q = Math.floor(Number(e.target.value)); if(!(q>=1)) q = 1;
+  q = Math.min(999, q); e.target.value = q; qtyDraft[id] = q;
 });
 
 /* ---------- ② 장바구니 ---------- */
