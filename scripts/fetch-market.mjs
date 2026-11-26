@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from "node:fs";
 
 const KEY = process.env.AT_SERVICE_KEY;
 const GKEY = process.env.GEMINI_API_KEY;
@@ -110,9 +110,12 @@ if (need.length && GKEY) {
 }
 writeFileSync("ai-tags.json", JSON.stringify(cache, null, 2));
 
-/* ---------- 3) 위키백과 사진 ---------- */
-const photoCache = readJson("photos.json");   // 한 번 찾은 사진은 저장해 두고 재사용
+/* ---------- 3) 사진: 위키백과 → Pixabay 순서 ---------- */
+const PKEY = process.env.PIXABAY_API_KEY;
+const photoCache = readJson("photos.json");   // 한 번 찾은 사진은 저장하고 다시 찾지 않음
 const UA = { "User-Agent": "flower-shop-mvp/1.0 (student project)", "Api-User-Agent": "flower-shop-mvp/1.0 (student project)" };
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+mkdirSync("images", { recursive: true });
 
 async function wikiPhoto(name) {
   for (const title of [name, `${name} (식물)`]) {
@@ -120,24 +123,50 @@ async function wikiPhoto(name) {
       const res = await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { headers: UA });
       if (!res.ok) continue;
       const j = await res.json();
-      if (j.type === "disambiguation") continue;   // 동음이의어 문서는 건너뜀
+      if (j.type === "disambiguation") continue;
       if (j.thumbnail?.source) {
-        return { photo: j.thumbnail.source, photoTitle: j.title, photoPage: j.content_urls?.desktop?.page || "" };
+        return { photo: j.thumbnail.source, photoTitle: j.title, photoPage: j.content_urls?.desktop?.page || "", source: "wikipedia" };
       }
     } catch (e) { /* 다음 후보로 */ }
   }
   return null;
 }
 
+async function pixabayPhoto(name, idx) {
+  if (!PKEY) return null;
+  // 꽃 사진이 나오도록 "꽃"을 붙여 검색, 가로 사진만
+  for (const q of [`${name} 꽃`, name]) {
+    try {
+      const url = `https://pixabay.com/api/?key=${encodeURIComponent(PKEY)}&q=${encodeURIComponent(q)}&lang=ko&image_type=photo&orientation=horizontal&safesearch=true&per_page=5`;
+      const res = await fetch(url);
+      if (!res.ok) { console.error("Pixabay HTTP", res.status, q); continue; }
+      const j = await res.json();
+      const hit = (j.hits || [])[0];
+      if (!hit) continue;
+      // 임시 주소(webformatURL)를 받아 저장소 파일로 저장 (영구 핫링크 금지 조건)
+      const img = await fetch(hit.webformatURL);
+      if (!img.ok) continue;
+      const buf = Buffer.from(await img.arrayBuffer());
+      const file = `images/pixabay-${hit.id}.jpg`;
+      writeFileSync(file, buf);
+      return { photo: file, photoTitle: `Pixabay (${hit.user})`, photoPage: hit.pageURL, source: "pixabay" };
+    } catch (e) { console.error("Pixabay 오류:", name, e.message); }
+  }
+  return null;
+}
+
 const photoMissing = [];
+let pi = 0;
 for (const [name] of ranked) {
   if (photoCache[name]?.photo) continue;
-  const p = await wikiPhoto(name);
+  let p = await wikiPhoto(name);
+  if (!p) { p = await pixabayPhoto(name, pi++); await sleep(700); }
   if (p) photoCache[name] = { ...p, foundAt: new Date().toISOString() };
   else photoMissing.push(name);
 }
 writeFileSync("photos.json", JSON.stringify(photoCache, null, 2));
 console.log("사진 못 찾음:", photoMissing.length, photoMissing);
+
 
 /* ---------- 4) market.json 저장 ---------- */
 const top = {};
