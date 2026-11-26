@@ -294,7 +294,13 @@ $("chips").addEventListener("click", e => {
   activeTag = c.dataset.t; renderChips(); renderFlowers();
 });
 $("kw").addEventListener("input", renderFlowers);
-const safeUrl = u => /^https:\/\//.test(String(u||"")) ? String(u) : "";
+/* 사진 주소: https 주소 또는 저장소 안 images/ 폴더의 파일만 허용 */
+const safeUrl = u => { u = String(u||""); return (/^https:\/\//.test(u) || /^images\/[\w.\-]+$/.test(u)) ? u : ""; };
+/* 업로드된 목록에 사진이 비어 있어도 market.json의 사진으로 보충 (공개 파일) */
+let MKT = {};
+fetch("market.json?v=" + Date.now()).then(r => r.ok ? r.json() : null).then(j => {
+  if (j && j.items) { MKT = j.items; renderFlowers(); }
+}).catch(() => {});
 function renderFlowers(){
   const k = $("kw").value.trim();
   if(!saleLoaded){ $("flowerGrid").innerHTML = `<div class="empty">오늘 판매 품목을 불러오는 중이에요…</div>`; return; }
@@ -303,7 +309,8 @@ function renderFlowers(){
     (!activeTag || f.tags.includes(activeTag)) &&
     (!k || f.tags.some(t => t.includes(k)) || f.name.includes(k) || f.meaning.includes(k)));
   $("flowerGrid").innerHTML = list.length ? list.map(f => {
-    const pu = safeUrl(f.photo), pg = safeUrl(f.photoPage), id = esc(f.id);
+    const mk = MKT[f.name] || {};
+    const pu = safeUrl(f.photo || mk.photo), pg = safeUrl(f.photoPage || mk.photoPage), id = esc(f.id);
     const info = [f.meaning ? `꽃말: ${esc(f.meaning)}` : "", f.color ? `색: ${esc(f.color)}` : "", `보관: ${esc(f.shelf||"보통")}`].filter(Boolean).join("<br>");
     return `
     <div class="card">
