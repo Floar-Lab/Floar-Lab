@@ -22,5 +22,11 @@
     "photoTitle": "금어초",
     "photoPage": "https://ko.wikipedia.org/wiki/%EA%B8%88%EC%96%B4%EC%B4%88",
     "foundAt": "2026-11-26T13:42:52.120Z"
+  },
+  "유칼립투스": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Starr_031002-0027_Eucalyptus_globulus.jpg/330px-Starr_031002-0027_Eucalyptus_globulus.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "유칼립투스",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%B9%BC%EB%A6%BD%ED%88%AC%EC%8A%A4",
+    "foundAt": "2026-11-26T14:10:33.357Z"
   }
 }
