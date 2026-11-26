@@ -28,5 +28,180 @@
     "photoTitle": "유칼립투스",
     "photoPage": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%B9%BC%EB%A6%BD%ED%88%AC%EC%8A%A4",
     "foundAt": "2026-11-26T14:10:33.357Z"
+  },
+  "리시안사스": {
+    "photo": "images/pixabay-1402486.jpg",
+    "photoTitle": "Pixabay (Pezibear)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%A6%AC%EC%8B%9C%EC%95%88-%ED%88%AC%EC%8A%A4-%EA%BD%83-%ED%95%98%EC%96%80%EC%83%89-1402486/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:37.285Z"
+  },
+  "스톡크": {
+    "photo": "images/pixabay-7511632.jpg",
+    "photoTitle": "Pixabay (IdaT)",
+    "photoPage": "https://pixabay.com/ko/photos/%ED%95%B4%EB%B3%80-%ED%99%94%EC%82%B0-%EB%8C%80%EC%96%91-%EC%9D%BC%EB%AA%B0-7511632/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:38.940Z"
+  },
+  "칼라": {
+    "photo": "images/pixabay-9768786.jpg",
+    "photoTitle": "Pixabay (ykaiavu)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EC%95%84%EB%A3%B8-%ED%95%98%EC%96%80%EC%83%89-%EB%B4%84-9768786/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:40.410Z"
+  },
+  "백합": {
+    "photo": "images/pixabay-3763573.jpg",
+    "photoTitle": "Pixabay (Ralphs_Fotos)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EB%B0%B1%ED%95%A9-%EC%8B%9D%EB%AC%BC%ED%95%99-%EB%B8%94-%EB%A3%B8-3763573/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:41.711Z"
+  },
+  "안시리움": {
+    "photo": "images/pixabay-2404769.jpg",
+    "photoTitle": "Pixabay (geraldfriedrich2)",
+    "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EB%A6%84-%ED%95%84%EB%93%9C-%EC%9E%90%EC%97%B0-%EA%B3%A1%EB%AC%BC-%ED%92%8D%EA%B2%BD-2404769/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:43.133Z"
+  },
+  "편백": {
+    "photo": "images/pixabay-4910871.jpg",
+    "photoTitle": "Pixabay (webentwicklerin)",
+    "photoPage": "https://pixabay.com/ko/photos/%ED%88%AC%EC%9E%90-%EC%83%9D%EB%AA%85%EC%9D%98-%EB%82%98%EB%AC%B4-4910871/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:44.385Z"
+  },
+  "프리지아": {
+    "photo": "images/pixabay-5985152.jpg",
+    "photoTitle": "Pixabay (HansLinde)",
+    "photoPage": "https://pixabay.com/ko/photos/%ED%94%84%EB%A6%AC%EC%A7%80%EC%95%84-%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EB%85%B8%EB%9E%80-%EA%BD%83-5985152/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:45.488Z"
+  },
+  "옥시페탈륨": {
+    "photo": "images/pixabay-4287128.jpg",
+    "photoTitle": "Pixabay (Couleur)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%B0%A4%EC%9D%98-%EC%97%AC%EC%99%95-4287128/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:46.558Z"
+  },
+  "공작초": {
+    "photo": "images/pixabay-7975358.jpg",
+    "photoTitle": "Pixabay (ignartonosbg)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%82%98%EB%AD%87%EC%9E%8E-%EC%8B%9D%EB%AC%BC-%EC%B9%BC%EB%9D%BC-%ED%85%8C%EC%95%84-7975358/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:47.764Z"
+  },
+  "라넌큘러스": {
+    "photo": "images/pixabay-142876.jpg",
+    "photoTitle": "Pixabay (ArtTower)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%8B%A4%EB%B0%9C-%EA%BD%83%EB%93%A4-%EC%9E%A5%EB%AF%B8-%EA%BD%83%EA%BD%82%EC%9D%B4-142876/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:48.775Z"
+  },
+  "호접란": {
+    "photo": "images/pixabay-7985587.jpg",
+    "photoTitle": "Pixabay (Wunderphotos1951)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%93%A4-%EB%82%98%EB%B0%A9-%EB%82%9C%EC%B4%88-%ED%9D%B0%EC%83%89-%EA%BD%83-7985587/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:49.964Z"
+  },
+  "심비디움": {
+    "photo": "images/pixabay-3778816.jpg",
+    "photoTitle": "Pixabay (anncapictures)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%82%9C%EC%B4%88-%EA%BD%83%EB%93%A4-%EC%98%A4%EB%A0%8C%EC%A7%80-%EA%BD%83-%EA%BD%83%EC%9E%8E-3778816/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:51.025Z"
+  },
+  "안개": {
+    "photo": "images/pixabay-7129432.jpg",
+    "photoTitle": "Pixabay (friday2022)",
+    "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EC%84%B1-%EC%9E%90%EC%97%B0-%EC%95%84%EB%A6%84%EB%8B%A4%EC%9B%80-%EB%AA%A8%EB%8D%B8-7129432/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:52.099Z"
+  },
+  "석죽": {
+    "photo": "images/pixabay-3425606.jpg",
+    "photoTitle": "Pixabay (EllenChan)",
+    "photoPage": "https://pixabay.com/ko/photos/%ED%8C%A8-%EB%9E%AD%EC%9D%B4-%EA%BD%83-%EC%9E%90%EC%97%B0-%EA%B3%B5%EC%9E%A5-%EA%BD%83-3425606/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:53.257Z"
+  },
+  "보리사초": {
+    "photo": "images/pixabay-100263.jpg",
+    "photoTitle": "Pixabay (realworkhard)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EC%96%91%EA%B7%80%EB%B9%84-%EB%B6%84%EC%95%BC-%EB%B9%A8%EA%B0%84-%EA%BD%83-100263/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:54.261Z"
+  },
+  "노무라": {
+    "photo": "images/pixabay-7256271.jpg",
+    "photoTitle": "Pixabay (REFLEX_PRODUCTION)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%8F%84%EB%A6%AC-%EC%A0%84%ED%86%B5%EC%A0%81%EC%9D%B8-%EC%9D%BC%EB%B3%B8-%EB%AC%B8-%EC%82%AC%ED%95%A0%EB%A6%B0-7256271/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:55.191Z"
+  },
+  "파니쿰": {
+    "photo": "images/pixabay-7191740.jpg",
+    "photoTitle": "Pixabay (Nennieinszweidrei)",
+    "photoPage": "https://pixabay.com/ko/photos/%EC%A0%AC%EC%8A%A4%EB%B6%80%EB%A5%B4%EC%B8%A0-%EC%84%80%EB%AF%B8-%EA%B0%80%EC%A3%BD-7191740/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:56.116Z"
+  },
+  "아미초": {
+    "photo": "images/pixabay-1936639.jpg",
+    "photoTitle": "Pixabay (12019)",
+    "photoPage": "https://pixabay.com/ko/photos/%EB%86%8D%EC%9E%A5-%EC%98%A4%ED%95%98%EC%9D%B4%EC%98%A4-%EC%95%84%EB%AF%B8%EC%89%AC-%ED%95%98%EB%8A%98-1936639/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:57.155Z"
+  },
+  "스타티스": {
+    "photo": "images/pixabay-6201439.jpg",
+    "photoTitle": "Pixabay (Nick_the_Photographer)",
+    "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EC%9D%BC%EB%AA%B0-%EC%95%BC%EC%83%9D%ED%99%94-6201439/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:58.279Z"
+  },
+  "천일홍": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/2230_-_Salzburg_-_Flowers.JPG/330px-2230_-_Salzburg_-_Flowers.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "천일홍",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%B2%9C%EC%9D%BC%ED%99%8D",
+    "source": "wikipedia",
+    "foundAt": "2026-11-26T14:17:58.287Z"
+  },
+  "엽란": {
+    "photo": "images/pixabay-2197679.jpg",
+    "photoTitle": "Pixabay (EvgeniT)",
+    "photoPage": "https://pixabay.com/ko/photos/%ED%91%B8%EB%A5%B8-%EA%BD%83-%EC%9D%B4%EC%8A%AC-%EB%AC%BC%EB%B0%A9%EC%9A%B8-%EC%A0%96%EC%9D%80-2197679/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:17:59.276Z"
+  },
+  "절화": {
+    "photo": "images/pixabay-1463562.jpg",
+    "photoTitle": "Pixabay (congerdesign)",
+    "photoPage": "https://pixabay.com/ko/photos/%EC%9E%A5%EB%AF%B8-%ED%95%91%ED%81%AC-%EC%9E%A5%EB%AF%B8-%EA%BD%83%EB%93%A4-1463562/",
+    "source": "pixabay",
+    "foundAt": "2026-11-26T14:18:00.315Z"
+  },
+  "시레네": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/White_Brine_cheese_cubes.jpg/330px-White_Brine_cheese_cubes.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "시레네",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%8B%9C%EB%A0%88%EB%84%A4",
+    "source": "wikipedia",
+    "foundAt": "2026-11-26T14:18:00.330Z"
+  },
+  "캐모마일": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Kamomillasaunio_%28Matricaria_recutita%29.JPG/330px-Kamomillasaunio_%28Matricaria_recutita%29.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "캐모마일",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%BA%90%EB%AA%A8%EB%A7%88%EC%9D%BC",
+    "source": "wikipedia",
+    "foundAt": "2026-11-26T14:18:01.737Z"
+  },
+  "꽃양배추": {
+    "photo": "https://upload.wikimedia.org/wikipedia/commons/2/25/Cauliflower.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+    "photoTitle": "콜리플라워",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%BD%9C%EB%A6%AC%ED%94%8C%EB%9D%BC%EC%9B%8C",
+    "source": "wikipedia",
+    "foundAt": "2026-11-26T14:18:02.051Z"
   }
 }
