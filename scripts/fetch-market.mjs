@@ -1,11 +1,18 @@
-import { writeFileSync } from "node:fs";
+import { writeFileSync, readFileSync, existsSync } from "node:fs";
 
 const KEY = process.env.AT_SERVICE_KEY;
+const GKEY = process.env.GEMINI_API_KEY;
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite"; // 모델 이름은 AI Studio에서 확인
 if (!KEY) { console.error("AT_SERVICE_KEY가 없습니다."); process.exit(1); }
 
-const DAYS = 5; // 최근 며칠을 볼지
+const DAYS = 5;    // 최근 며칠을 볼지
+const TOP_N = 30;  // 상위 몇 개를 남길지
 const BASE = "https://flower.at.or.kr/api/returnData.api";
+const TAGS = ["로맨틱","청순","화려함","차분함","감사","축하","사랑","위로","우아함","밝음"];
+const SHELF = ["쉬움","보통","어려움"];
+
 const kst = (d) => new Date(d.getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+const readJson = (p) => existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : {};
 
 function pickRows(j) {
   if (Array.isArray(j)) return j;
@@ -27,6 +34,7 @@ async function fetchDay(date) {
   return pickRows(json);
 }
 
+/* ---------- 1) aT 거래 품목 수집 ---------- */
 const items = {};
 let ok = 0, fail = 0;
 for (let i = 0; i < DAYS; i++) {
@@ -44,28 +52,77 @@ for (let i = 0; i < DAYS; i++) {
       if (r.saleDate > cur.lastDate) { cur.lastDate = r.saleDate; cur.avgAmt = Number(r.avgAmt) || null; }
       items[name] = cur;
     }
-  } catch (e) {
-    fail++;
-    console.error(date, "실패:", e.message);
-  }
+  } catch (e) { fail++; console.error(date, "실패:", e.message); }
 }
-
 if (ok === 0) { console.error("모든 날짜가 실패했습니다. market.json을 바꾸지 않습니다."); process.exit(1); }
 
-const TOP_N = 30; // 상위 몇 개까지 남길지
+const ranked = Object.entries(items).sort((a, b) => b[1].qty - a[1].qty).slice(0, TOP_N);
 
-const ranked = Object.entries(items)
-  .sort((a, b) => b[1].qty - a[1].qty)
-  .slice(0, TOP_N);
+/* ---------- 2) 태그: 사람이 만든 사전 → AI 저장소 → AI 새로 질문 ---------- */
+const dict = readJson("flower-tags.json");   // 사람이 검수한 사전 (최우선)
+const cache = readJson("ai-tags.json");      // AI가 만든 결과 저장소
 
+const findManual = (name) => {
+  if (dict[name]) return dict[name];
+  const k = Object.keys(dict).find(k => name.includes(k) || k.includes(name));
+  return k ? dict[k] : null;
+};
+
+function clean(o) {
+  const tags = Array.isArray(o?.tags) ? o.tags.filter(t => TAGS.includes(t)).slice(0, 4) : [];
+  const meaning = typeof o?.meaning === "string" ? o.meaning.slice(0, 20) : "";
+  const shelf = SHELF.includes(o?.shelf) ? o.shelf : "보통";
+  return { tags, meaning, shelf };
+}
+
+async function askAI(names) {
+  const prompt = `다음은 한국 화훼 경매에서 거래된 품목 이름입니다. 각 품목에 대해 JSON으로만 답하세요.
+형식: {"품목명": {"tags": [...], "meaning": "...", "shelf": "..."}}
+- tags: 아래 목록에서만 1~3개 고름: ${TAGS.join(", ")}
+- meaning: 대표 꽃말 한 단어나 짧은 구. 확실하지 않으면 빈 문자열
+- shelf: 절화 보관·유통 난이도. ${SHELF.join(", ")} 중 하나
+품목: ${names.join(", ")}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": GKEY },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: "application/json" },
+    }),
+  });
+  const j = await res.json();
+  if (!res.ok) throw new Error(`Gemini HTTP ${res.status}: ${JSON.stringify(j).slice(0, 300)}`);
+  const text = j.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Gemini 응답이 비어 있음");
+  return JSON.parse(text);
+}
+
+const need = ranked.map(([n]) => n).filter(n => !findManual(n) && !cache[n]);
+if (need.length && GKEY) {
+  try {
+    const out = await askAI(need);
+    for (const n of need) if (out[n]) cache[n] = { ...clean(out[n]), askedAt: new Date().toISOString() };
+    console.log("AI 태그 생성:", need.filter(n => cache[n]).length, "/", need.length);
+  } catch (e) { console.error("AI 태그 실패(기존 결과는 유지):", e.message); }
+} else if (need.length) {
+  console.log("GEMINI_API_KEY가 없어 AI 태그를 건너뜁니다:", need);
+}
+writeFileSync("ai-tags.json", JSON.stringify(cache, null, 2));
+
+/* ---------- 3) market.json 저장 ---------- */
 const top = {};
-ranked.forEach(([name, v], i) => { top[name] = { rank: i + 1, ...v }; });
-
+ranked.forEach(([name, v], i) => {
+  const m = findManual(name), a = cache[name];
+  const info = m || a || null;
+  top[name] = {
+    rank: i + 1, ...v,
+    tags: info?.tags || [], meaning: info?.meaning || "", shelf: info?.shelf || "보통",
+    tagSource: m ? "manual" : a ? "ai" : "none",   // ai는 사람이 검수 전
+  };
+});
 writeFileSync("market.json", JSON.stringify({
-  updatedAt: new Date().toISOString(),
-  days: DAYS,
-  totalItems: Object.keys(items).length,
-  items: top,
+  updatedAt: new Date().toISOString(), days: DAYS,
+  totalItems: Object.keys(items).length, items: top,
 }, null, 2));
-console.log("저장 완료. 전체 품목:", Object.keys(items).length, "저장:", ranked.length, "성공:", ok, "실패:", fail);
-
+console.log("저장 완료. 상위:", ranked.length, "성공:", ok, "실패:", fail);
