@@ -1,0 +1,26 @@
+{
+  "국화": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Chrysanthemum%2Ckiku%2Ckatori-city%2Cjapan.JPG/330px-Chrysanthemum%2Ckiku%2Ckatori-city%2Cjapan.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "국화 (식물)",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EA%B5%AD%ED%99%94_(%EC%8B%9D%EB%AC%BC)",
+    "foundAt": "2026-11-26T13:42:50.267Z"
+  },
+  "장미": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Rosa_Precious_platinum.jpg/330px-Rosa_Precious_platinum.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "장미",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%AF%B8",
+    "foundAt": "2026-11-26T13:42:50.345Z"
+  },
+  "거베라": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Gerbera_bloom_closeup02.jpg/330px-Gerbera_bloom_closeup02.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "거베라",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EA%B1%B0%EB%B2%A0%EB%9D%BC",
+    "foundAt": "2026-11-26T13:42:50.424Z"
+  },
+  "금어초": {
+    "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Illustration_Antirrhinum_majus_clean.jpg/330px-Illustration_Antirrhinum_majus_clean.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "photoTitle": "금어초",
+    "photoPage": "https://ko.wikipedia.org/wiki/%EA%B8%88%EC%96%B4%EC%B4%88",
+    "foundAt": "2026-11-26T13:42:52.120Z"
+  }
+}

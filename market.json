@@ -1,187 +1,425 @@
 {
-  "updatedAt": "2026-11-26T13:23:55.749Z",
+  "updatedAt": "2026-11-26T13:42:55.526Z",
   "days": 5,
   "totalItems": 101,
+  "photoMissing": [
+    "리시안사스",
+    "스톡크",
+    "칼라",
+    "유칼립투스",
+    "백합",
+    "안시리움",
+    "편백",
+    "프리지아",
+    "옥시페탈륨",
+    "공작초",
+    "라넌큘러스",
+    "호접란",
+    "심비디움",
+    "안개",
+    "석죽",
+    "보리사초",
+    "노무라",
+    "파니쿰",
+    "아미초",
+    "스타티스",
+    "천일홍",
+    "엽란",
+    "절화",
+    "시레네",
+    "캐모마일",
+    "꽃양배추"
+  ],
   "items": {
     "국화": {
       "rank": 1,
       "lastDate": "2026-11-26",
       "qty": 34774,
-      "avgAmt": 710
+      "avgAmt": 710,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/Chrysanthemum%2Ckiku%2Ckatori-city%2Cjapan.JPG/330px-Chrysanthemum%2Ckiku%2Ckatori-city%2Cjapan.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "국화 (식물)",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EA%B5%AD%ED%99%94_(%EC%8B%9D%EB%AC%BC)"
     },
     "장미": {
       "rank": 2,
       "lastDate": "2026-11-25",
       "qty": 27099,
-      "avgAmt": 14249
+      "avgAmt": 14249,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3a/Rosa_Precious_platinum.jpg/330px-Rosa_Precious_platinum.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "장미",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EC%9E%A5%EB%AF%B8"
     },
     "거베라": {
       "rank": 3,
       "lastDate": "2026-11-26",
       "qty": 23712,
-      "avgAmt": 1510
+      "avgAmt": 1510,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Gerbera_bloom_closeup02.jpg/330px-Gerbera_bloom_closeup02.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "거베라",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EA%B1%B0%EB%B2%A0%EB%9D%BC"
     },
     "리시안사스": {
       "rank": 4,
       "lastDate": "2026-11-25",
       "qty": 11014,
-      "avgAmt": 12491
+      "avgAmt": 12491,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "스톡크": {
       "rank": 5,
       "lastDate": "2026-11-25",
       "qty": 10242,
-      "avgAmt": 4522
+      "avgAmt": 4522,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "금어초": {
       "rank": 6,
       "lastDate": "2026-11-25",
       "qty": 5487,
-      "avgAmt": 3245
+      "avgAmt": 3245,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Illustration_Antirrhinum_majus_clean.jpg/330px-Illustration_Antirrhinum_majus_clean.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "금어초",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EA%B8%88%EC%96%B4%EC%B4%88"
     },
     "칼라": {
       "rank": 7,
       "lastDate": "2026-11-25",
       "qty": 5452,
-      "avgAmt": 6489
+      "avgAmt": 6489,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "유칼립투스": {
       "rank": 8,
       "lastDate": "2026-11-25",
       "qty": 4743,
-      "avgAmt": 6932
+      "avgAmt": 6932,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "백합": {
       "rank": 9,
       "lastDate": "2026-11-25",
       "qty": 4051,
-      "avgAmt": 13616
+      "avgAmt": 13616,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "안시리움": {
       "rank": 10,
       "lastDate": "2026-11-25",
       "qty": 3996,
-      "avgAmt": 1700
+      "avgAmt": 1700,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "편백": {
       "rank": 11,
       "lastDate": "2026-11-25",
       "qty": 3596,
-      "avgAmt": 2463
+      "avgAmt": 2463,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "프리지아": {
       "rank": 12,
       "lastDate": "2026-11-25",
       "qty": 3350,
-      "avgAmt": 3762
+      "avgAmt": 3762,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "옥시페탈륨": {
       "rank": 13,
       "lastDate": "2026-11-25",
       "qty": 3140,
-      "avgAmt": 10532
+      "avgAmt": 10532,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "공작초": {
       "rank": 14,
       "lastDate": "2026-11-25",
       "qty": 2914,
-      "avgAmt": 7840
+      "avgAmt": 7840,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "라넌큘러스": {
       "rank": 15,
       "lastDate": "2026-11-25",
       "qty": 2540,
-      "avgAmt": 12014
+      "avgAmt": 12014,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "호접란": {
       "rank": 16,
       "lastDate": "2026-11-25",
       "qty": 2316,
-      "avgAmt": 10322
+      "avgAmt": 10322,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "심비디움": {
       "rank": 17,
       "lastDate": "2026-11-25",
       "qty": 2117,
-      "avgAmt": 1334
+      "avgAmt": 1334,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "안개": {
       "rank": 18,
       "lastDate": "2026-11-25",
       "qty": 1817,
-      "avgAmt": 16151
+      "avgAmt": 16151,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "석죽": {
       "rank": 19,
       "lastDate": "2026-11-25",
       "qty": 1774,
-      "avgAmt": 5494
+      "avgAmt": 5494,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "보리사초": {
       "rank": 20,
       "lastDate": "2026-11-25",
       "qty": 1726,
-      "avgAmt": 8481
+      "avgAmt": 8481,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "노무라": {
       "rank": 21,
       "lastDate": "2026-11-25",
       "qty": 1640,
-      "avgAmt": 2846
+      "avgAmt": 2846,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "파니쿰": {
       "rank": 22,
       "lastDate": "2026-11-25",
       "qty": 1527,
-      "avgAmt": 11034
+      "avgAmt": 11034,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "아미초": {
       "rank": 23,
       "lastDate": "2026-11-26",
       "qty": 1497,
-      "avgAmt": 3500
+      "avgAmt": 3500,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "스타티스": {
       "rank": 24,
       "lastDate": "2026-11-25",
       "qty": 1495,
-      "avgAmt": 11033
+      "avgAmt": 11033,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "천일홍": {
       "rank": 25,
       "lastDate": "2026-11-25",
       "qty": 1467,
-      "avgAmt": 7085
+      "avgAmt": 7085,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "엽란": {
       "rank": 26,
       "lastDate": "2026-11-25",
       "qty": 1390,
-      "avgAmt": 540
+      "avgAmt": 540,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "절화": {
       "rank": 27,
       "lastDate": "2026-11-25",
       "qty": 1368,
-      "avgAmt": 6284
+      "avgAmt": 6284,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "시레네": {
       "rank": 28,
       "lastDate": "2026-11-25",
       "qty": 1368,
-      "avgAmt": 10744
+      "avgAmt": 10744,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "캐모마일": {
       "rank": 29,
       "lastDate": "2026-11-25",
       "qty": 1364,
-      "avgAmt": 8975
+      "avgAmt": 8975,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     },
     "꽃양배추": {
       "rank": 30,
       "lastDate": "2026-11-26",
       "qty": 1335,
-      "avgAmt": 500
+      "avgAmt": 500,
+      "tags": [],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "none",
+      "photo": "",
+      "photoTitle": "",
+      "photoPage": ""
     }
   }
 }
