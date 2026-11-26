@@ -52,9 +52,20 @@ for (let i = 0; i < DAYS; i++) {
 
 if (ok === 0) { console.error("모든 날짜가 실패했습니다. market.json을 바꾸지 않습니다."); process.exit(1); }
 
+const TOP_N = 30; // 상위 몇 개까지 남길지
+
+const ranked = Object.entries(items)
+  .sort((a, b) => b[1].qty - a[1].qty)
+  .slice(0, TOP_N);
+
+const top = {};
+ranked.forEach(([name, v], i) => { top[name] = { rank: i + 1, ...v }; });
+
 writeFileSync("market.json", JSON.stringify({
   updatedAt: new Date().toISOString(),
   days: DAYS,
-  items,
+  totalItems: Object.keys(items).length,
+  items: top,
 }, null, 2));
-console.log("저장 완료. 품목 수:", Object.keys(items).length, "성공:", ok, "실패:", fail);
+console.log("저장 완료. 전체 품목:", Object.keys(items).length, "저장:", ranked.length, "성공:", ok, "실패:", fail);
+
