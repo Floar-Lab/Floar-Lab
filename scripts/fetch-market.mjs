@@ -110,19 +110,50 @@ if (need.length && GKEY) {
 }
 writeFileSync("ai-tags.json", JSON.stringify(cache, null, 2));
 
-/* ---------- 3) market.json 저장 ---------- */
+/* ---------- 3) 위키백과 사진 ---------- */
+const photoCache = readJson("photos.json");   // 한 번 찾은 사진은 저장해 두고 재사용
+const UA = { "User-Agent": "flower-shop-mvp/1.0 (student project)", "Api-User-Agent": "flower-shop-mvp/1.0 (student project)" };
+
+async function wikiPhoto(name) {
+  for (const title of [name, `${name} (식물)`]) {
+    try {
+      const res = await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, { headers: UA });
+      if (!res.ok) continue;
+      const j = await res.json();
+      if (j.type === "disambiguation") continue;   // 동음이의어 문서는 건너뜀
+      if (j.thumbnail?.source) {
+        return { photo: j.thumbnail.source, photoTitle: j.title, photoPage: j.content_urls?.desktop?.page || "" };
+      }
+    } catch (e) { /* 다음 후보로 */ }
+  }
+  return null;
+}
+
+const photoMissing = [];
+for (const [name] of ranked) {
+  if (photoCache[name]?.photo) continue;
+  const p = await wikiPhoto(name);
+  if (p) photoCache[name] = { ...p, foundAt: new Date().toISOString() };
+  else photoMissing.push(name);
+}
+writeFileSync("photos.json", JSON.stringify(photoCache, null, 2));
+console.log("사진 못 찾음:", photoMissing.length, photoMissing);
+
+/* ---------- 4) market.json 저장 ---------- */
 const top = {};
 ranked.forEach(([name, v], i) => {
   const m = findManual(name), a = cache[name];
   const info = m || a || null;
+  const ph = photoCache[name] || {};
   top[name] = {
     rank: i + 1, ...v,
     tags: info?.tags || [], meaning: info?.meaning || "", shelf: info?.shelf || "보통",
-    tagSource: m ? "manual" : a ? "ai" : "none",   // ai는 사람이 검수 전
+    tagSource: m ? "manual" : a ? "ai" : "none",
+    photo: ph.photo || "", photoTitle: ph.photoTitle || "", photoPage: ph.photoPage || "",
   };
 });
 writeFileSync("market.json", JSON.stringify({
   updatedAt: new Date().toISOString(), days: DAYS,
-  totalItems: Object.keys(items).length, items: top,
+  totalItems: Object.keys(items).length, photoMissing, items: top,
 }, null, 2));
 console.log("저장 완료. 상위:", ranked.length, "성공:", ok, "실패:", fail);
