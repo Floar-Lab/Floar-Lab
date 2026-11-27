@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2026-11-27T00:46:28.348Z",
+  "updatedAt": "2026-11-27T21:53:56.608Z",
   "days": 5,
-  "totalItems": 103,
+  "totalItems": 99,
   "photoMissing": [],
   "items": {
     "국화": {
       "rank": 1,
-      "lastDate": "2026-11-27",
-      "qty": 49685,
-      "avgAmt": 2247,
+      "lastDate": "2026-11-28",
+      "qty": 32107,
+      "avgAmt": 1120,
       "tags": [
         "차분함",
         "감사"
@@ -23,7 +23,7 @@
     "장미": {
       "rank": 2,
       "lastDate": "2026-11-27",
-      "qty": 41068,
+      "qty": 26568,
       "avgAmt": 13933,
       "tags": [
         "로맨틱",
@@ -39,9 +39,9 @@
     },
     "거베라": {
       "rank": 3,
-      "lastDate": "2026-11-27",
-      "qty": 33538,
-      "avgAmt": 4088,
+      "lastDate": "2026-11-28",
+      "qty": 21711,
+      "avgAmt": 3000,
       "tags": [
         "밝음",
         "축하"
@@ -56,7 +56,7 @@
     "리시안사스": {
       "rank": 4,
       "lastDate": "2026-11-27",
-      "qty": 15418,
+      "qty": 9360,
       "avgAmt": 16855,
       "tags": [
         "우아함",
@@ -72,7 +72,7 @@
     "스톡크": {
       "rank": 5,
       "lastDate": "2026-11-27",
-      "qty": 15050,
+      "qty": 9129,
       "avgAmt": 6683,
       "tags": [
         "밝음",
@@ -85,10 +85,25 @@
       "photoTitle": "Pixabay (IdaT)",
       "photoPage": "https://pixabay.com/ko/photos/%ED%95%B4%EB%B3%80-%ED%99%94%EC%82%B0-%EB%8C%80%EC%96%91-%EC%9D%BC%EB%AA%B0-7511632/"
     },
-    "금어초": {
+    "편백": {
       "rank": 6,
       "lastDate": "2026-11-27",
-      "qty": 8033,
+      "qty": 4964,
+      "avgAmt": 2428,
+      "tags": [
+        "차분함"
+      ],
+      "meaning": "변하지 않는 굳건함",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "images/pixabay-4910871.jpg",
+      "photoTitle": "Pixabay (webentwicklerin)",
+      "photoPage": "https://pixabay.com/ko/photos/%ED%88%AC%EC%9E%90-%EC%83%9D%EB%AA%85%EC%9D%98-%EB%82%98%EB%AC%B4-4910871/"
+    },
+    "금어초": {
+      "rank": 7,
+      "lastDate": "2026-11-27",
+      "qty": 4934,
       "avgAmt": 3488,
       "tags": [
         "화려함",
@@ -101,10 +116,25 @@
       "photoTitle": "금어초",
       "photoPage": "https://ko.wikipedia.org/wiki/%EA%B8%88%EC%96%B4%EC%B4%88"
     },
-    "칼라": {
-      "rank": 7,
+    "유칼립투스": {
+      "rank": 8,
       "lastDate": "2026-11-27",
-      "qty": 7491,
+      "qty": 4593,
+      "avgAmt": 4344,
+      "tags": [
+        "차분함"
+      ],
+      "meaning": "추억",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Starr_031002-0027_Eucalyptus_globulus.jpg/330px-Starr_031002-0027_Eucalyptus_globulus.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "유칼립투스",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%B9%BC%EB%A6%BD%ED%88%AC%EC%8A%A4"
+    },
+    "칼라": {
+      "rank": 9,
+      "lastDate": "2026-11-27",
+      "qty": 4396,
       "avgAmt": 6926,
       "tags": [
         "우아함",
@@ -117,55 +147,10 @@
       "photoTitle": "Pixabay (ykaiavu)",
       "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EC%95%84%EB%A3%B8-%ED%95%98%EC%96%80%EC%83%89-%EB%B4%84-9768786/"
     },
-    "유칼립투스": {
-      "rank": 8,
-      "lastDate": "2026-11-27",
-      "qty": 6990,
-      "avgAmt": 4344,
-      "tags": [
-        "차분함"
-      ],
-      "meaning": "추억",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Starr_031002-0027_Eucalyptus_globulus.jpg/330px-Starr_031002-0027_Eucalyptus_globulus.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-      "photoTitle": "유칼립투스",
-      "photoPage": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%B9%BC%EB%A6%BD%ED%88%AC%EC%8A%A4"
-    },
-    "안시리움": {
-      "rank": 9,
-      "lastDate": "2026-11-27",
-      "qty": 6573,
-      "avgAmt": 1972,
-      "tags": [
-        "화려함"
-      ],
-      "meaning": "불타는 사랑",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-2404769.jpg",
-      "photoTitle": "Pixabay (geraldfriedrich2)",
-      "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EB%A6%84-%ED%95%84%EB%93%9C-%EC%9E%90%EC%97%B0-%EA%B3%A1%EB%AC%BC-%ED%92%8D%EA%B2%BD-2404769/"
-    },
-    "편백": {
+    "백합": {
       "rank": 10,
       "lastDate": "2026-11-27",
-      "qty": 6524,
-      "avgAmt": 2428,
-      "tags": [
-        "차분함"
-      ],
-      "meaning": "변하지 않는 굳건함",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-4910871.jpg",
-      "photoTitle": "Pixabay (webentwicklerin)",
-      "photoPage": "https://pixabay.com/ko/photos/%ED%88%AC%EC%9E%90-%EC%83%9D%EB%AA%85%EC%9D%98-%EB%82%98%EB%AC%B4-4910871/"
-    },
-    "백합": {
-      "rank": 11,
-      "lastDate": "2026-11-27",
-      "qty": 5919,
+      "qty": 3871,
       "avgAmt": 11308,
       "tags": [
         "우아함",
@@ -178,26 +163,25 @@
       "photoTitle": "Pixabay (Ralphs_Fotos)",
       "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EB%B0%B1%ED%95%A9-%EC%8B%9D%EB%AC%BC%ED%95%99-%EB%B8%94-%EB%A3%B8-3763573/"
     },
-    "프리지아": {
-      "rank": 12,
+    "안시리움": {
+      "rank": 11,
       "lastDate": "2026-11-27",
-      "qty": 4692,
-      "avgAmt": 3895,
+      "qty": 3572,
+      "avgAmt": 1972,
       "tags": [
-        "밝음",
-        "청순"
+        "화려함"
       ],
-      "meaning": "당신의 시작을 응원해",
-      "shelf": "보통",
+      "meaning": "불타는 사랑",
+      "shelf": "쉬움",
       "tagSource": "ai",
-      "photo": "images/pixabay-5985152.jpg",
-      "photoTitle": "Pixabay (HansLinde)",
-      "photoPage": "https://pixabay.com/ko/photos/%ED%94%84%EB%A6%AC%EC%A7%80%EC%95%84-%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EB%85%B8%EB%9E%80-%EA%BD%83-5985152/"
+      "photo": "images/pixabay-2404769.jpg",
+      "photoTitle": "Pixabay (geraldfriedrich2)",
+      "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EB%A6%84-%ED%95%84%EB%93%9C-%EC%9E%90%EC%97%B0-%EA%B3%A1%EB%AC%BC-%ED%92%8D%EA%B2%BD-2404769/"
     },
     "공작초": {
-      "rank": 13,
+      "rank": 12,
       "lastDate": "2026-11-27",
-      "qty": 4162,
+      "qty": 2838,
       "avgAmt": 7954,
       "tags": [
         "청순",
@@ -210,26 +194,26 @@
       "photoTitle": "Pixabay (ignartonosbg)",
       "photoPage": "https://pixabay.com/ko/photos/%EB%82%98%EB%AD%87%EC%9E%8E-%EC%8B%9D%EB%AC%BC-%EC%B9%BC%EB%9D%BC-%ED%85%8C%EC%95%84-7975358/"
     },
-    "옥시페탈륨": {
-      "rank": 14,
+    "프리지아": {
+      "rank": 13,
       "lastDate": "2026-11-27",
-      "qty": 3882,
-      "avgAmt": 10737,
+      "qty": 2659,
+      "avgAmt": 3895,
       "tags": [
-        "청순",
-        "로맨틱"
+        "밝음",
+        "청순"
       ],
-      "meaning": "날 데려가줘요",
-      "shelf": "어려움",
+      "meaning": "당신의 시작을 응원해",
+      "shelf": "보통",
       "tagSource": "ai",
-      "photo": "images/pixabay-4287128.jpg",
-      "photoTitle": "Pixabay (Couleur)",
-      "photoPage": "https://pixabay.com/ko/photos/%EB%B0%A4%EC%9D%98-%EC%97%AC%EC%99%95-4287128/"
+      "photo": "images/pixabay-5985152.jpg",
+      "photoTitle": "Pixabay (HansLinde)",
+      "photoPage": "https://pixabay.com/ko/photos/%ED%94%84%EB%A6%AC%EC%A7%80%EC%95%84-%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EB%85%B8%EB%9E%80-%EA%BD%83-5985152/"
     },
     "라넌큘러스": {
-      "rank": 15,
+      "rank": 14,
       "lastDate": "2026-11-27",
-      "qty": 3815,
+      "qty": 2547,
       "avgAmt": 11576,
       "tags": [
         "화려함",
@@ -242,88 +226,26 @@
       "photoTitle": "Pixabay (ArtTower)",
       "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%8B%A4%EB%B0%9C-%EA%BD%83%EB%93%A4-%EC%9E%A5%EB%AF%B8-%EA%BD%83%EA%BD%82%EC%9D%B4-142876/"
     },
-    "안개": {
-      "rank": 16,
-      "lastDate": "2026-11-27",
-      "qty": 3104,
-      "avgAmt": 14621,
+    "옥시페탈륨": {
+      "rank": 15,
+      "lastDate": "2026-11-28",
+      "qty": 2289,
+      "avgAmt": 5020,
       "tags": [
         "청순",
         "로맨틱"
       ],
-      "meaning": "사랑의 성공",
-      "shelf": "보통",
+      "meaning": "날 데려가줘요",
+      "shelf": "어려움",
       "tagSource": "ai",
-      "photo": "images/pixabay-7129432.jpg",
-      "photoTitle": "Pixabay (friday2022)",
-      "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EC%84%B1-%EC%9E%90%EC%97%B0-%EC%95%84%EB%A6%84%EB%8B%A4%EC%9B%80-%EB%AA%A8%EB%8D%B8-7129432/"
-    },
-    "심비디움": {
-      "rank": 17,
-      "lastDate": "2026-11-27",
-      "qty": 2956,
-      "avgAmt": 3804,
-      "tags": [
-        "우아함",
-        "화려함"
-      ],
-      "meaning": "귀부인",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-3778816.jpg",
-      "photoTitle": "Pixabay (anncapictures)",
-      "photoPage": "https://pixabay.com/ko/photos/%EB%82%9C%EC%B4%88-%EA%BD%83%EB%93%A4-%EC%98%A4%EB%A0%8C%EC%A7%80-%EA%BD%83-%EA%BD%83%EC%9E%8E-3778816/"
-    },
-    "노무라": {
-      "rank": 18,
-      "lastDate": "2026-11-27",
-      "qty": 2955,
-      "avgAmt": 2499,
-      "tags": [
-        "차분함"
-      ],
-      "meaning": "",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-7256271.jpg",
-      "photoTitle": "Pixabay (REFLEX_PRODUCTION)",
-      "photoPage": "https://pixabay.com/ko/photos/%EB%8F%84%EB%A6%AC-%EC%A0%84%ED%86%B5%EC%A0%81%EC%9D%B8-%EC%9D%BC%EB%B3%B8-%EB%AC%B8-%EC%82%AC%ED%95%A0%EB%A6%B0-7256271/"
-    },
-    "보리사초": {
-      "rank": 19,
-      "lastDate": "2026-11-27",
-      "qty": 2595,
-      "avgAmt": 6325,
-      "tags": [
-        "차분함"
-      ],
-      "meaning": "",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-100263.jpg",
-      "photoTitle": "Pixabay (realworkhard)",
-      "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EC%96%91%EA%B7%80%EB%B9%84-%EB%B6%84%EC%95%BC-%EB%B9%A8%EA%B0%84-%EA%BD%83-100263/"
-    },
-    "석죽": {
-      "rank": 20,
-      "lastDate": "2026-11-27",
-      "qty": 2413,
-      "avgAmt": 5081,
-      "tags": [
-        "밝음",
-        "감사"
-      ],
-      "meaning": "순결한 사랑",
-      "shelf": "보통",
-      "tagSource": "ai",
-      "photo": "images/pixabay-3425606.jpg",
-      "photoTitle": "Pixabay (EllenChan)",
-      "photoPage": "https://pixabay.com/ko/photos/%ED%8C%A8-%EB%9E%AD%EC%9D%B4-%EA%BD%83-%EC%9E%90%EC%97%B0-%EA%B3%B5%EC%9E%A5-%EA%BD%83-3425606/"
+      "photo": "images/pixabay-4287128.jpg",
+      "photoTitle": "Pixabay (Couleur)",
+      "photoPage": "https://pixabay.com/ko/photos/%EB%B0%A4%EC%9D%98-%EC%97%AC%EC%99%95-4287128/"
     },
     "호접란": {
-      "rank": 21,
+      "rank": 16,
       "lastDate": "2026-11-25",
-      "qty": 2316,
+      "qty": 2191,
       "avgAmt": 10322,
       "tags": [
         "우아함",
@@ -336,26 +258,88 @@
       "photoTitle": "Pixabay (Wunderphotos1951)",
       "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%93%A4-%EB%82%98%EB%B0%A9-%EB%82%9C%EC%B4%88-%ED%9D%B0%EC%83%89-%EA%BD%83-7985587/"
     },
-    "스타티스": {
-      "rank": 22,
+    "안개": {
+      "rank": 17,
       "lastDate": "2026-11-27",
-      "qty": 2300,
-      "avgAmt": 9613,
+      "qty": 2187,
+      "avgAmt": 14621,
       "tags": [
-        "차분함",
-        "감사"
+        "청순",
+        "로맨틱"
       ],
-      "meaning": "영원한 사랑",
+      "meaning": "사랑의 성공",
+      "shelf": "보통",
+      "tagSource": "ai",
+      "photo": "images/pixabay-7129432.jpg",
+      "photoTitle": "Pixabay (friday2022)",
+      "photoPage": "https://pixabay.com/ko/photos/%EC%97%AC%EC%84%B1-%EC%9E%90%EC%97%B0-%EC%95%84%EB%A6%84%EB%8B%A4%EC%9B%80-%EB%AA%A8%EB%8D%B8-7129432/"
+    },
+    "노무라": {
+      "rank": 18,
+      "lastDate": "2026-11-27",
+      "qty": 2135,
+      "avgAmt": 2499,
+      "tags": [
+        "차분함"
+      ],
+      "meaning": "",
       "shelf": "쉬움",
       "tagSource": "ai",
-      "photo": "images/pixabay-6201439.jpg",
-      "photoTitle": "Pixabay (Nick_the_Photographer)",
-      "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EC%9D%BC%EB%AA%B0-%EC%95%BC%EC%83%9D%ED%99%94-6201439/"
+      "photo": "images/pixabay-7256271.jpg",
+      "photoTitle": "Pixabay (REFLEX_PRODUCTION)",
+      "photoPage": "https://pixabay.com/ko/photos/%EB%8F%84%EB%A6%AC-%EC%A0%84%ED%86%B5%EC%A0%81%EC%9D%B8-%EC%9D%BC%EB%B3%B8-%EB%AC%B8-%EC%82%AC%ED%95%A0%EB%A6%B0-7256271/"
+    },
+    "심비디움": {
+      "rank": 19,
+      "lastDate": "2026-11-27",
+      "qty": 2014,
+      "avgAmt": 3804,
+      "tags": [
+        "우아함",
+        "화려함"
+      ],
+      "meaning": "귀부인",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "images/pixabay-3778816.jpg",
+      "photoTitle": "Pixabay (anncapictures)",
+      "photoPage": "https://pixabay.com/ko/photos/%EB%82%9C%EC%B4%88-%EA%BD%83%EB%93%A4-%EC%98%A4%EB%A0%8C%EC%A7%80-%EA%BD%83-%EA%BD%83%EC%9E%8E-3778816/"
+    },
+    "보리사초": {
+      "rank": 20,
+      "lastDate": "2026-11-27",
+      "qty": 1643,
+      "avgAmt": 6325,
+      "tags": [
+        "차분함"
+      ],
+      "meaning": "",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "images/pixabay-100263.jpg",
+      "photoTitle": "Pixabay (realworkhard)",
+      "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83-%EC%96%91%EA%B7%80%EB%B9%84-%EB%B6%84%EC%95%BC-%EB%B9%A8%EA%B0%84-%EA%BD%83-100263/"
+    },
+    "루스커스": {
+      "rank": 21,
+      "lastDate": "2026-11-27",
+      "qty": 1556,
+      "avgAmt": 1120,
+      "tags": [
+        "차분함",
+        "우아함"
+      ],
+      "meaning": "온화",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "images/pixabay-7577002.jpg",
+      "photoTitle": "Pixabay (Marjonhorn)",
+      "photoPage": "https://pixabay.com/ko/photos/%ED%9E%88%EB%B9%84%EC%8A%A4%EC%BB%A4%EC%8A%A4-%EB%B9%A8%EA%B0%84-%EA%BD%83-%EC%8B%9D%EB%AC%BC-%EA%BD%83-7577002/"
     },
     "델피니움": {
-      "rank": 23,
+      "rank": 22,
       "lastDate": "2026-11-27",
-      "qty": 2196,
+      "qty": 1524,
       "avgAmt": 10342,
       "tags": [
         "청순",
@@ -369,26 +353,10 @@
       "photoTitle": "제비고깔속",
       "photoPage": "https://ko.wikipedia.org/wiki/%EC%A0%9C%EB%B9%84%EA%B3%A0%EA%B9%94%EC%86%8D"
     },
-    "캐모마일": {
-      "rank": 24,
-      "lastDate": "2026-11-27",
-      "qty": 2102,
-      "avgAmt": 9123,
-      "tags": [
-        "밝음",
-        "차분함"
-      ],
-      "meaning": "역경에 굴하지 않는 힘",
-      "shelf": "어려움",
-      "tagSource": "ai",
-      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Kamomillasaunio_%28Matricaria_recutita%29.JPG/330px-Kamomillasaunio_%28Matricaria_recutita%29.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-      "photoTitle": "캐모마일",
-      "photoPage": "https://ko.wikipedia.org/wiki/%EC%BA%90%EB%AA%A8%EB%A7%88%EC%9D%BC"
-    },
     "꽃양배추": {
-      "rank": 25,
+      "rank": 23,
       "lastDate": "2026-11-27",
-      "qty": 2067,
+      "qty": 1467,
       "avgAmt": 1781,
       "tags": [
         "화려함",
@@ -401,58 +369,10 @@
       "photoTitle": "콜리플라워",
       "photoPage": "https://ko.wikipedia.org/wiki/%EC%BD%9C%EB%A6%AC%ED%94%8C%EB%9D%BC%EC%9B%8C"
     },
-    "파니쿰": {
-      "rank": 26,
-      "lastDate": "2026-11-27",
-      "qty": 2049,
-      "avgAmt": 10721,
-      "tags": [
-        "차분함",
-        "청순"
-      ],
-      "meaning": "",
-      "shelf": "보통",
-      "tagSource": "ai",
-      "photo": "images/pixabay-7191740.jpg",
-      "photoTitle": "Pixabay (Nennieinszweidrei)",
-      "photoPage": "https://pixabay.com/ko/photos/%EC%A0%AC%EC%8A%A4%EB%B6%80%EB%A5%B4%EC%B8%A0-%EC%84%80%EB%AF%B8-%EA%B0%80%EC%A3%BD-7191740/"
-    },
-    "아미초": {
-      "rank": 27,
-      "lastDate": "2026-11-27",
-      "qty": 2024,
-      "avgAmt": 5939,
-      "tags": [
-        "청순",
-        "차분함"
-      ],
-      "meaning": "가정의 행복",
-      "shelf": "어려움",
-      "tagSource": "ai",
-      "photo": "images/pixabay-1936639.jpg",
-      "photoTitle": "Pixabay (12019)",
-      "photoPage": "https://pixabay.com/ko/photos/%EB%86%8D%EC%9E%A5-%EC%98%A4%ED%95%98%EC%9D%B4%EC%98%A4-%EC%95%84%EB%AF%B8%EC%89%AC-%ED%95%98%EB%8A%98-1936639/"
-    },
-    "천일홍": {
-      "rank": 28,
-      "lastDate": "2026-11-27",
-      "qty": 2019,
-      "avgAmt": 9270,
-      "tags": [
-        "로맨틱",
-        "차분함"
-      ],
-      "meaning": "변치 않는 사랑",
-      "shelf": "쉬움",
-      "tagSource": "ai",
-      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/2230_-_Salzburg_-_Flowers.JPG/330px-2230_-_Salzburg_-_Flowers.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-      "photoTitle": "천일홍",
-      "photoPage": "https://ko.wikipedia.org/wiki/%EC%B2%9C%EC%9D%BC%ED%99%8D"
-    },
     "절지": {
-      "rank": 29,
+      "rank": 24,
       "lastDate": "2026-11-27",
-      "qty": 1853,
+      "qty": 1386,
       "avgAmt": 6104,
       "tags": [
         "차분함",
@@ -465,21 +385,101 @@
       "photoTitle": "Pixabay (44528033)",
       "photoPage": "https://pixabay.com/ko/photos/%EA%B0%9C%EB%AF%B8-%EA%B3%A4%EC%B6%A9-%EB%94%B1%EC%A0%95%EB%B2%8C%EB%A0%88-%EA%B3%A4%EC%B6%A9-9061666/"
     },
-    "시레네": {
-      "rank": 30,
+    "아미초": {
+      "rank": 25,
       "lastDate": "2026-11-27",
-      "qty": 1771,
-      "avgAmt": 10095,
+      "qty": 1382,
+      "avgAmt": 5939,
       "tags": [
         "청순",
-        "밝음"
+        "차분함"
       ],
-      "meaning": "함께 있어주세요",
+      "meaning": "가정의 행복",
       "shelf": "어려움",
       "tagSource": "ai",
-      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/White_Brine_cheese_cubes.jpg/330px-White_Brine_cheese_cubes.jpg?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
-      "photoTitle": "시레네",
-      "photoPage": "https://ko.wikipedia.org/wiki/%EC%8B%9C%EB%A0%88%EB%84%A4"
+      "photo": "images/pixabay-1936639.jpg",
+      "photoTitle": "Pixabay (12019)",
+      "photoPage": "https://pixabay.com/ko/photos/%EB%86%8D%EC%9E%A5-%EC%98%A4%ED%95%98%EC%9D%B4%EC%98%A4-%EC%95%84%EB%AF%B8%EC%89%AC-%ED%95%98%EB%8A%98-1936639/"
+    },
+    "석죽": {
+      "rank": 26,
+      "lastDate": "2026-11-27",
+      "qty": 1370,
+      "avgAmt": 5081,
+      "tags": [
+        "밝음",
+        "감사"
+      ],
+      "meaning": "순결한 사랑",
+      "shelf": "보통",
+      "tagSource": "ai",
+      "photo": "images/pixabay-3425606.jpg",
+      "photoTitle": "Pixabay (EllenChan)",
+      "photoPage": "https://pixabay.com/ko/photos/%ED%8C%A8-%EB%9E%AD%EC%9D%B4-%EA%BD%83-%EC%9E%90%EC%97%B0-%EA%B3%B5%EC%9E%A5-%EA%BD%83-3425606/"
+    },
+    "캐모마일": {
+      "rank": 27,
+      "lastDate": "2026-11-27",
+      "qty": 1362,
+      "avgAmt": 9123,
+      "tags": [
+        "밝음",
+        "차분함"
+      ],
+      "meaning": "역경에 굴하지 않는 힘",
+      "shelf": "어려움",
+      "tagSource": "ai",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Kamomillasaunio_%28Matricaria_recutita%29.JPG/330px-Kamomillasaunio_%28Matricaria_recutita%29.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "캐모마일",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EC%BA%90%EB%AA%A8%EB%A7%88%EC%9D%BC"
+    },
+    "스타티스": {
+      "rank": 28,
+      "lastDate": "2026-11-27",
+      "qty": 1340,
+      "avgAmt": 9613,
+      "tags": [
+        "차분함",
+        "감사"
+      ],
+      "meaning": "영원한 사랑",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "images/pixabay-6201439.jpg",
+      "photoTitle": "Pixabay (Nick_the_Photographer)",
+      "photoPage": "https://pixabay.com/ko/photos/%EA%BD%83%EB%93%A4-%EC%8B%9D%EB%AC%BC-%EC%9D%BC%EB%AA%B0-%EC%95%BC%EC%83%9D%ED%99%94-6201439/"
+    },
+    "천일홍": {
+      "rank": 29,
+      "lastDate": "2026-11-27",
+      "qty": 1338,
+      "avgAmt": 9270,
+      "tags": [
+        "로맨틱",
+        "차분함"
+      ],
+      "meaning": "변치 않는 사랑",
+      "shelf": "쉬움",
+      "tagSource": "ai",
+      "photo": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/2230_-_Salzburg_-_Flowers.JPG/330px-2230_-_Salzburg_-_Flowers.JPG?utm_source=ko.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+      "photoTitle": "천일홍",
+      "photoPage": "https://ko.wikipedia.org/wiki/%EC%B2%9C%EC%9D%BC%ED%99%8D"
+    },
+    "파니쿰": {
+      "rank": 30,
+      "lastDate": "2026-11-27",
+      "qty": 1313,
+      "avgAmt": 10721,
+      "tags": [
+        "차분함",
+        "청순"
+      ],
+      "meaning": "",
+      "shelf": "보통",
+      "tagSource": "ai",
+      "photo": "images/pixabay-7191740.jpg",
+      "photoTitle": "Pixabay (Nennieinszweidrei)",
+      "photoPage": "https://pixabay.com/ko/photos/%EC%A0%AC%EC%8A%A4%EB%B6%80%EB%A5%B4%EC%B8%A0-%EC%84%80%EB%AF%B8-%EA%B0%80%EC%A3%BD-7191740/"
     }
   }
 }
