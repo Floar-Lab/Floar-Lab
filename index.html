@@ -67,6 +67,8 @@ td.n,th.n{text-align:right}
 .otable h3{margin:18px 0 8px}
 .shopbox{max-width:520px;margin:10px auto 0;background:rgba(255,255,255,.8);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px;line-height:1.6}
 .shopbox:empty{display:none}
+.q::after{content:"송이";font-size:12px;color:var(--mute);margin-left:4px}
+.unit{font-size:12px;color:var(--mute);font-weight:400}
 </style>
 </head>
 <body>
@@ -90,11 +92,13 @@ td.n,th.n{text-align:right}
       <span class="note" id="seasonInfo"></span>
     </div>
     <div class="chips" id="chips"></div>
+    <p class="note">🌸 수량은 모두 <b>송이</b> 단위입니다.</p>
     <div class="grid" id="flowerGrid"></div>
   </section>
 
   <!-- ② 장바구니 -->
   <section id="cart">
+    <p class="note">🌸 수량은 모두 <b>송이</b> 단위입니다.</p>
     <div id="cartBody"></div>
     <form id="orderForm" class="form" style="display:none" autocomplete="on" novalidate>
       <h3>📝 주문서 작성</h3>
@@ -661,7 +665,7 @@ function renderOrders(){
     <div class="wrap"><table><thead><tr><th style="width:40px">선택</th><th>주문일</th><th>수령 날짜</th><th>이름</th><th>전화번호</th><th>종류</th><th>수령 방식</th><th>품목</th><th>추가 요청사항</th></tr></thead><tbody>` +
     orders.map(o => `<tr><td><input type="checkbox" data-del="${esc(o._id)}" aria-label="주문 선택" style="width:20px;height:20px"></td><td>${fmtTs(o.createdAt)}</td><td>${esc(o.pickupDate||"-")}</td><td>${esc(o.name||"-")}</td><td>${esc(fmtPhone(o.phone))}</td><td>${esc(o.kind||"-")}</td>
       <td>${esc(o.method||"-")}${o.method==="배달" && o.address ? "<br>" + esc(o.address) : ""}</td>
-      <td>${(o.items||[]).map(it => esc(it.name)+" × "+esc(it.qty)).join("<br>")}</td><td style="white-space:pre-wrap;min-width:140px">${esc(o.request||"-")}</td></tr>`).join("") +
+      <td>${(o.items||[]).map(it => esc(it.name)+" × "+esc(it.qty)+"송이").join("<br>")}</td><td style="white-space:pre-wrap;min-width:140px">${esc(o.request||"-")}</td></tr>`).join("") +
     `</tbody></table></div>`;
 }
 function updDel(){
@@ -690,35 +694,73 @@ $("orderList").addEventListener("click", async e => {
     e.target.disabled = false;
   }
 });
+/* 단위: 고객 수요 = 송이, 매입 = 속, 가격 = 원/속 */
+const BUNCH_DEFAULT = 10;   // 1속 = 10송이 (임시 가정 — 실제 단위 확인 후 수정)
+const PER_BUNCH = {};       // 꽃별 예외 예: {"장미":10, "카네이션":20}
+const won = n => Number(n).toLocaleString("ko-KR");
+function mkInfo(id){
+  const nm = demand[id] && demand[id].name;
+  return (typeof MKT !== "undefined" && MKT && MKT[nm]) || {};
+}
+function bunch(id){
+  const nm = demand[id] && demand[id].name;
+  const v = Number(PER_BUNCH[nm] || mkInfo(id).perBunch || BUNCH_DEFAULT);
+  return v > 0 ? v : BUNCH_DEFAULT;
+}
+function price(id){
+  const f = FMAP[id];
+  const p = Number((f && f.avgAmt) || mkInfo(id).avgAmt);
+  return p > 0 ? p : null;
+}
+/* 추천 매입량(속) = 고객 수요(송이) × 보관 여유율 ÷ 1속 송이 수, 올림 */
 function rec(id){
   const f = FMAP[id], q = demand[id].qty;
-  const k = f ? ({"쉬움":1.2,"보통":1.1,"어려움":1.0}[f.shelf]) : 1.1;
-  return Math.ceil(q*k - 1e-9);
+  const k = f ? ({"쉬움":1.2,"보통":1.1,"어려움":1.0}[f.shelf] || 1.1) : 1.1;
+  return Math.max(1, Math.ceil(q*k/bunch(id) - 1e-9));
 }
 function risk(id){
   const v = orderQty[id];
-  if (v===undefined || v==="" || isNaN(v)) return {cls:"none", label:"입력 대기", diff:""};
+  if (v===undefined || v=="" || isNaN(v)) return {cls:"none", label:"입력 대기", diff:""};
   const r = rec(id), diff = v - r, ratio = r ? diff/r : 0;
   const hard = FMAP[id] && FMAP[id].shelf==="어려움";
   if (ratio > (hard?0.1:0.2)) return {cls:"over", label:"버릴 위험", diff};
   if (ratio < -0.2) return {cls:"short", label:"부족 위험", diff};
   return {cls:"ok", label:"적당", diff};
 }
+/* 예상 매입가(원) = 속 수 × 평균가(원/속). 내 주문량이 비어 있으면 추천 매입량 기준 */
+function cost(id){
+  const p = price(id); if(p===null) return null;
+  const v = orderQty[id];
+  const has = !(v===undefined || v==="" || isNaN(v));
+  return {amt: p * (has ? Number(v) : rec(id)), basis: has ? "내 주문" : "추천"};
+}
+function costText(id){
+  const c = cost(id);
+  return c ? won(c.amt) + (c.basis==="추천" ? ` <span class="unit">(추천 기준)</span>` : "") : "-";
+}
+function costSumHtml(){
+  let t = 0, n = 0;
+  Object.keys(demand).forEach(id => { const c = cost(id); if(c) t += c.amt; else n++; });
+  return `예상 매입 총액<b>${won(t)}원</b>` + (n ? `<span class="unit">가격 정보 없는 ${n}종 제외</span>` : "");
+}
 function renderOwner(){
   const ids = Object.keys(demand).sort((a,b)=>demand[b].qty-demand[a].qty);
   if(!ids.length){ $("ownerTable").innerHTML = `<div class="empty">아직 접수된 주문이 없어요.</div>`; return; }
   const totalQ = ids.reduce((s,i)=>s+demand[i].qty,0);
   $("ownerTable").innerHTML = `
-    <div class="sum"><div>접수 건수<b>${orderCount}건</b></div><div>꽃 종류<b>${ids.length}종</b></div><div>고객 수요 합계<b>${totalQ}송이</b></div></div>
-    <div class="wrap"><table><thead><tr><th>꽃</th><th>보관</th><th class="n">고객 수요</th><th class="n">추천 매입량</th><th class="n">내 주문량</th><th class="n">차이</th><th>위험도</th><th>메모</th></tr></thead><tbody>` +
+    <div class="sum"><div>접수 건수<b>${orderCount}건</b></div><div>꽃 종류<b>${ids.length}종</b></div><div>고객 수요 합계<b>${totalQ}송이</b></div><div id="costSum">${costSumHtml()}</div></div>
+    <p class="note">고객 수요는 <b>송이</b>, 매입은 <b>속</b> 단위입니다. 추천 매입량 = 고객 수요 × 보관 여유율 ÷ 1속 송이 수(기본 ${BUNCH_DEFAULT}송이)를 올림한 값이고, 예상 매입가 = 속 수 × aT 평균가(원/속)입니다. 모두 참고용 추정치입니다.</p>
+    <div class="wrap"><table><thead><tr><th>꽃</th><th>보관</th><th class="n">고객 수요(송이)</th><th class="n">추천 매입량(속)</th><th class="n">내 주문량(속)</th><th class="n">차이(속)</th><th>위험도</th><th class="n">평균가(원/속)</th><th class="n">예상 매입가(원)</th><th>메모</th></tr></thead><tbody>` +
     ids.map(id => {
-      const f = FMAP[id], r = risk(id);
+      const f = FMAP[id], r = risk(id), p = price(id);
       return `<tr data-id="${esc(id)}">
         <td>${f?f.em:""} ${esc(demand[id].name)}</td><td>${f?f.shelf:"-"}</td>
-        <td class="n">${demand[id].qty}</td><td class="n"><b>${rec(id)}</b></td>
-        <td class="n"><input type="number" min="0" style="width:80px" data-o="${esc(id)}" value="${orderQty[id]??""}"></td>
+        <td class="n">${demand[id].qty}</td><td class="n"><b>${rec(id)}</b><div class="unit">1속=${bunch(id)}송이</div></td>
+        <td class="n"><input type="number" min="0" step="1" inputmode="numeric" style="width:80px" data-o="${esc(id)}" value="${orderQty[id]??""}"></td>
         <td class="n" data-diff>${r.diff===""?"":(r.diff>0?"+":"")+r.diff}</td>
         <td class="risk ${r.cls}" data-risk>${r.label}</td>
+        <td class="n">${p===null?"-":won(p)}</td>
+        <td class="n" data-cost>${costText(id)}</td>
         <td><input type="text" style="width:140px" data-memo="${esc(id)}" value="${esc(memo[id]||"")}"></td></tr>`;
     }).join("") + `</tbody></table></div>`;
 }
@@ -730,6 +772,8 @@ $("ownerTable").addEventListener("input", e => {
     const tr = t.closest("tr"), r = risk(id);
     tr.querySelector("[data-diff]").textContent = r.diff===""?"":(r.diff>0?"+":"")+r.diff;
     const rk = tr.querySelector("[data-risk]"); rk.className = "risk "+r.cls; rk.textContent = r.label;
+    tr.querySelector("[data-cost]").innerHTML = costText(id);
+    const cs = $("costSum"); if(cs) cs.innerHTML = costSumHtml();
   } else if (t.dataset.memo !== undefined){
     memo[t.dataset.memo] = t.value;
   }
@@ -748,14 +792,39 @@ $("clearBtn").addEventListener("click", async () => {
 });
 $("csvBtn").addEventListener("click", () => {
   const ids = Object.keys(demand); if(!ids.length) return;
-  const rows = [["꽃","보관난이도","고객수요","추천매입량","내주문량","차이","위험도","메모"]];
-  ids.forEach(id => { const r = risk(id), f = FMAP[id];
-    rows.push([demand[id].name, f?f.shelf:"-", demand[id].qty, rec(id), orderQty[id]??"", r.diff, r.label, memo[id]||""]); });
+  const rows = [["꽃","보관난이도","고객수요(송이)","추천매입량(속)","내주문량(속)","차이(속)","위험도","평균가(원/속)","예상매입가(원)","메모"]];
+  ids.forEach(id => { const r = risk(id), f = FMAP[id], p = price(id), c = cost(id);
+    rows.push([demand[id].name, f?f.shelf:"-", demand[id].qty, rec(id), orderQty[id]??"", r.diff, r.label, p??"", c?c.amt:"", memo[id]||""]); });
   const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\r\n");
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob(["\ufeff"+csv], {type:"text/csv;charset=utf-8"}));
   a.download = "매입체크표.csv"; a.click();
 });
+
+/* 오늘 판매 꽃 표: 평균가·거래량 뒤에 단위 표시 (표 구조를 직접 못 봐서 머리글 글자로 찾음) */
+(function(){
+  const box = document.getElementById("saleBox"); if(!box) return;
+  const RULES = [
+    {key:"평균가", head:"원/속", cell:t => /^[\d,]+$/.test(t) ? t+"원/속" : /^[\d,]+원$/.test(t) ? t+"/속" : null},
+    {key:"거래량", head:"속",    cell:t => /^[\d,]+$/.test(t) ? t+"속" : null}
+  ];
+  function fix(){
+    box.querySelectorAll("table").forEach(tb => {
+      [...tb.querySelectorAll("thead th")].forEach((th, i) => {
+        const rule = RULES.find(r => th.textContent.includes(r.key)); if(!rule) return;
+        if(!th.textContent.includes("(")) th.textContent = th.textContent.trim() + " (" + rule.head + ")";
+        tb.querySelectorAll("tbody tr").forEach(tr => {
+          const td = tr.children[i];
+          if(!td || td.children.length) return;
+          const nt = rule.cell(td.textContent.trim());
+          if(nt) td.textContent = nt;
+        });
+      });
+    });
+  }
+  new MutationObserver(fix).observe(box, {childList:true, subtree:true});
+  fix();
+})();
 
 /* ---------- 시작 ---------- */
 renderChips(); renderFlowers(); updateCartCount(); syncMethod();
