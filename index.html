@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>꽃집 운영 통합 지원 플랫폼</title>
+<title>Flora Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
 <style>
 :root{--pink:#e8618c;--pink-l:#fde8ef;--green:#4b8b6b;--green-l:#e6f3ec;--ink:#2d2a2e;--mute:#7a7480;--line:#eadfe4;--bg:#fff9fb;--red:#d64545;--amber:#d98a1f}
 *{box-sizing:border-box}
@@ -69,11 +72,17 @@ td.n,th.n{text-align:right}
 .shopbox:empty{display:none}
 .q::after{content:"송이";font-size:12px;color:var(--mute);margin-left:4px}
 .unit{font-size:12px;color:var(--mute);font-weight:400}
+header h1.logo{font-family:"Playfair Display","Pretendard",serif;font-style:italic;font-weight:700;font-size:36px;letter-spacing:.5px;color:var(--pink);margin:0 0 4px}
+header h1.logo span{color:var(--green)}
+header h1.logo .logo-ico{font-style:normal;margin-right:6px;font-size:30px}
+.pkprev{width:100%;max-width:380px;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--pink-l);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:10px;color:var(--mute);font-size:13px;text-align:center;padding:0}
+.pkprev img{width:100%;height:100%;object-fit:cover;display:block}
+.pkprev .pkem{font-size:44px;line-height:1.2}
 </style>
 </head>
 <body>
 <header>
-  <h1>🌸 꽃집 운영 통합 지원 플랫폼</h1>
+  <h1 class="logo"><span class="logo-ico">🌸</span>Flora <span>Lab</span></h1>
   <p>손님이 꽃을 담아 보내면, 사장님만 볼 수 있는 매입 체크표로 모입니다</p>
   <div id="shopInfo" class="shopbox"></div>
 </header>
@@ -107,10 +116,12 @@ td.n,th.n{text-align:right}
         <input type="text" id="oName" name="customerName" autocomplete="name" maxlength="30" placeholder="홍길동"></div>
       <div class="fr"><label class="t" for="oPhone">전화번호 <span class="req">*</span></label>
         <input type="tel" id="oPhone" name="customerPhone" autocomplete="tel" maxlength="20" placeholder="010-1234-5678"></div>
-      <div class="fr"><span class="t">원하는 종류 <span class="req">*</span></span>
+      <div class="fr"><span class="t">포장 형태 <span class="req">*</span></span>
+        <div class="pkprev" id="packPrev"></div>
         <div class="rg">
-          <label><input type="radio" name="oKind" value="꽃바구니"> 💐 꽃바구니</label>
           <label><input type="radio" name="oKind" value="꽃다발"> 🌷 꽃다발</label>
+          <label><input type="radio" name="oKind" value="꽃바구니"> 💐 꽃바구니</label>
+          <label><input type="radio" name="oKind" value="센터피스"> 🪴 센터피스</label>
         </div></div>
       <div class="fr"><span class="t">수령 방식 <span class="req">*</span></span>
         <div class="rg">
@@ -158,7 +169,7 @@ td.n,th.n{text-align:right}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, serverTimestamp }
+import { getFirestore, collection, addDoc as _addDoc, getDocs, deleteDoc as _deleteDoc, serverTimestamp, doc as _docRef, setDoc as _setDocP }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -183,6 +194,84 @@ if (configured) {
   auth = getAuth(app);
 } else {
   document.getElementById("cfgWarn").style.display = "block";
+}
+
+/* ---------- 단일 사이트: 로그인하면 사장님 탭이 생김 ----------
+   손님(로그아웃): 처음·꽃 탐색·장바구니만 보임 (사장님 탭·로그인 창 숨김)
+   사장님(로그인): 같은 사이트에 사장님 탭이 추가됨 (내 UID가 곧 내 가게)
+   로그인 입구: 맨 아래 푸터의 작은 "사장님 로그인" 링크
+   ※ 탭 숨기기는 화면 정리용이며, 데이터 보호는 Firestore 규칙이 담당 */
+let OWNER_SITE = false;   // 로그인하면 true (파일 이름으로 구분하지 않음)
+{
+  const gst = document.createElement("style");
+  gst.textContent = `
+body.guest:not(.login-open) [data-tab="owner"],
+body.guest:not(.login-open) #owner,
+body.guest [data-tab="saleTab"],body.guest [data-tab="stockTab"],
+body.guest #saleTab,body.guest #stockTab,
+body.guest [data-ownercard]{display:none!important}
+.owner-entry{color:var(--mute);font-size:12px;text-decoration:underline;cursor:pointer;background:none;border:0;padding:6px 8px;font-family:inherit}
+body:not(.guest) .owner-entry-wrap{display:none}`;
+  document.head.appendChild(gst);
+  document.body.classList.add("guest");
+
+  /* 시작 화면의 "재고관리" 카드는 손님에게 숨김 (표시만 표식을 달고, 숨김은 위 CSS가 담당) */
+  const markCards = () => document.querySelectorAll("button,a,[role=button]").forEach(el => {
+    if (!el.closest("footer") && !el.dataset.ownercard && /재고관리/.test(el.textContent) && el.textContent.length < 80) el.dataset.ownercard = "1";
+  });
+  markCards();
+  const mo = new MutationObserver(markCards); mo.observe(document.body, { childList: true, subtree: true });
+  setTimeout(() => mo.disconnect(), 4000);
+
+  /* 푸터의 로그인 입구 */
+  let ft = document.querySelector("footer");
+  if (!ft) {
+    ft = document.createElement("footer");
+    ft.style.cssText = "text-align:center;padding:18px 12px;color:var(--mute);font-size:12px";
+    document.body.appendChild(ft);
+  }
+  const entry = document.createElement("button");
+  entry.type = "button"; entry.className = "owner-entry"; entry.id = "ownerEntry"; entry.textContent = "사장님 로그인";
+  const wrap = document.createElement("span"); wrap.className = "owner-entry-wrap";
+  wrap.append(" · ", entry); ft.appendChild(wrap);
+  entry.addEventListener("click", () => {
+    document.body.classList.add("login-open");
+    const b = document.querySelector('nav button[data-tab="owner"]');
+    if (b) { b.click(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  });
+  /* 로그인하지 않고 다른 탭으로 가면 로그인 탭을 다시 숨김 */
+  const nav = document.querySelector("nav");
+  if (nav) nav.addEventListener("click", e => {
+    const b = e.target.closest("button[data-tab]");
+    if (b && b.dataset.tab !== "owner") document.body.classList.remove("login-open");
+  });
+
+  const OWN_IDS = ["owner", "saleTab", "stockTab"];
+  const applyRole = u => {
+    OWNER_SITE = !!u;
+    document.body.classList.toggle("guest", !u);
+    if (u) document.body.classList.remove("login-open");
+    document.title = u ? "Flora Lab · 사장님" : "Flora Lab";
+    /* 로그아웃되면 사장님 탭에서 첫 화면으로 */
+    if (!u && OWN_IDS.some(id => { const s = document.getElementById(id); return s && s.classList.contains("on"); })) {
+      const home = [...document.querySelectorAll("nav button[data-tab]")].find(b => !OWN_IDS.includes(b.dataset.tab));
+      if (home) home.click();
+    }
+  };
+  if (auth) onAuthStateChanged(auth, u => {
+    applyRole(u);
+    if (!u) return;
+    /* 로그인한 계정의 UID가 곧 내 가게 → ?shop=UID 로 맞춤 */
+    const cur = new URLSearchParams(location.search).get("shop");
+    if (cur !== u.uid) {
+      localStorage.setItem("ownerShop", u.uid);
+      sessionStorage.setItem("goOwner", "1");
+      location.replace(location.pathname + "?shop=" + encodeURIComponent(u.uid));
+    } else if (sessionStorage.getItem("goOwner")) {
+      sessionStorage.removeItem("goOwner");
+      setTimeout(() => { const b = document.querySelector('nav button[data-tab="owner"]'); if (b) b.click(); }, 300);
+    }
+  });
 }
 
 /* ---------- 꽃 데이터 (예시값: 꽃말·태그는 발표 전 출처 확인 필요) ---------- */
@@ -251,6 +340,143 @@ input.qin{-moz-appearance:textfield;appearance:textfield;text-align:center}
 .card .act{flex-wrap:wrap}`;
   document.head.appendChild(st); }
 
+/* ---------- 📷 주문서 사진 첨부: 주문당 최대 3장, 브라우저에서 줄여서 Firestore(orders/주문ID/photos)에 저장 ---------- */
+const PH = { list: [] };
+const PH_MAX = 3;
+const PH_OK = /^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
+{ const st = document.createElement("style");
+  st.textContent = `.phg{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.pht{position:relative;width:84px;height:84px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#fff}.pht img{width:100%;height:100%;object-fit:cover;display:block}.pht button{position:absolute;top:2px;right:2px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:14px;line-height:1;cursor:pointer}#phOv{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;overflow:auto;padding:20px}#phOv .in{max-width:760px;margin:0 auto;background:#fff;border-radius:14px;padding:14px}#phOv img{max-width:100%;border-radius:10px;display:block;margin:8px 0 2px}`;
+  document.head.appendChild(st); }
+
+function phRender(){
+  const g = $("phList"); if (!g) return;
+  g.innerHTML = "";
+  PH.list.forEach((d, i) => {
+    const w = document.createElement("div"); w.className = "pht";
+    const im = document.createElement("img"); im.src = d; im.alt = "첨부 사진 " + (i + 1);
+    const b = document.createElement("button"); b.type = "button"; b.textContent = "✕"; b.setAttribute("aria-label", "사진 빼기");
+    b.addEventListener("click", () => { PH.list.splice(i, 1); phRender(); });
+    w.append(im, b); g.appendChild(w);
+  });
+  const c = $("phCnt"); if (c) c.textContent = PH.list.length + " / " + PH_MAX + "장";
+}
+
+/* 사진을 가로세로 최대 800px JPEG 로 줄임 (Firestore 문서 1MiB 제한 때문에 장당 약 240KB 이하로) */
+function phToJpeg(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const MAX = 800, s = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(1, Math.round(img.naturalWidth * s)), h = Math.max(1, Math.round(img.naturalHeight * s));
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
+      let q = 0.75, d = c.toDataURL("image/jpeg", q);
+      while (d.length > 330000 && q > 0.4) { q -= 0.1; d = c.toDataURL("image/jpeg", q); }
+      d.length > 330000 ? reject(new Error("too big")) : resolve(d);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("load")); };
+    img.src = url;
+  });
+}
+
+/* 주문서의 추가 요청사항 아래에 사진 첨부칸 만들기 */
+{
+  const ta = $("oReq"), host = ta ? ta.closest(".fr") : null;
+  if (host) {
+    ta.maxLength = 270;   /* 예약 시간·사진 표시 문구가 앞뒤로 붙어도 300자를 넘지 않게 */
+    const cnt = host.querySelector(".cnt"); if (cnt) cnt.innerHTML = '<span id="reqCnt">0</span> / 270자';
+    host.insertAdjacentHTML("afterend", `<div class="fr" id="phBox"><label class="t" for="phIn">참고 사진 <span class="note">(선택, 최대 3장 · <span id="phCnt">0 / 3장</span>)</span></label><input type="file" id="phIn" accept="image/*" multiple><div id="phList" class="phg"></div><div id="phMsg" class="note" role="status"></div><div class="note">⚠️ 시연용이에요. 사람 얼굴이 나오는 사진 말고 꽃 참고 이미지만 올려 주세요.</div></div>`);
+    $("phIn").addEventListener("change", async e => {
+      const msg = $("phMsg"); msg.style.color = ""; msg.textContent = "";
+      const files = [...e.target.files]; e.target.value = "";
+      for (const file of files) {
+        if (PH.list.length >= PH_MAX) { msg.textContent = "사진은 최대 3장까지 첨부할 수 있어요."; break; }
+        if (!/^image\//.test(file.type)) { msg.textContent = "이미지 파일만 첨부할 수 있어요."; continue; }
+        try { PH.list.push(await phToJpeg(file)); }
+        catch (err) { msg.textContent = "이 사진은 첨부할 수 없어요. (형식이 지원되지 않거나 너무 커요)"; }
+      }
+      phRender();
+    });
+    const f = $("orderForm"); if (f) f.addEventListener("reset", () => { PH.list = []; phRender(); });
+  }
+}
+
+/* 주문 저장/삭제를 감싸서 사진도 함께 처리 (기존 주문 코드는 그대로 둠) */
+const addDoc = async (ref, data, ...rest) => {
+  const photos = (ref && ref.path === "orders") ? PH.list.slice() : [];
+  if (photos.length) {
+    const mark = "[사진 " + photos.length + "장]";
+    data = { ...data, request: data.request ? data.request + " " + mark : mark };
+  }
+  const res = await _addDoc(ref, data, ...rest);
+  if (photos.length) {
+    const msg = $("phMsg");
+    try {
+      await Promise.all(photos.map((d, i) => _setDocP(_docRef(db, "orders", res.id, "photos", "p" + i), { data: d, createdAt: serverTimestamp() })));
+      PH.list = []; phRender();
+    } catch (err) {
+      console.error(err);
+      if (msg) { msg.style.color = "var(--red)"; msg.textContent = "주문은 전달됐지만 사진 저장에 실패했어요: " + (err.code || err.message); }
+    }
+  }
+  return res;
+};
+const deleteDoc = async (ref, ...rest) => {
+  try {
+    if (ref && ref.parent && ref.parent.path === "orders") {
+      await Promise.all(["p0", "p1", "p2"].map(p => _deleteDoc(_docRef(db, "orders", ref.id, "photos", p)).catch(() => {})));
+    }
+  } catch (e) { /* 사진 삭제 실패해도 주문 삭제는 계속 */ }
+  return _deleteDoc(ref, ...rest);
+};
+
+/* 사장님: 주문서 표에서 [사진 N장] 표시를 버튼으로 바꾸고, 누르면 사진을 보여 줌 */
+{
+  const ov = document.createElement("div"); ov.id = "phOv";
+  ov.innerHTML = '<div class="in"><div class="bar"><b>📷 손님이 첨부한 참고 사진</b><button type="button" class="btn sub" id="phClose" style="margin-left:auto">닫기</button></div><div id="phBody"></div></div>';
+  document.body.appendChild(ov);
+  const close = () => { ov.style.display = "none"; $("phBody").textContent = ""; };
+  $("phClose").addEventListener("click", close);
+  ov.addEventListener("click", e => { if (e.target === ov) close(); });
+  async function open(orderId){
+    const body = $("phBody"); body.textContent = "불러오는 중…"; ov.style.display = "block";
+    try {
+      const snap = await getDocs(collection(db, "orders", orderId, "photos"));
+      const items = snap.docs.sort((a, b) => a.id.localeCompare(b.id)).map(d => d.data().data).filter(s => typeof s === "string" && PH_OK.test(s));
+      body.textContent = "";
+      if (!items.length) { body.textContent = "저장된 사진이 없어요."; return; }
+      items.forEach((s, i) => {
+        const im = document.createElement("img"); im.src = s; im.alt = "레퍼런스 사진 " + (i + 1);
+        const a = document.createElement("a"); a.href = s; a.download = "레퍼런스-" + (i + 1) + ".jpg"; a.className = "note"; a.textContent = "⬇ 사진 " + (i + 1) + " 저장";
+        body.append(im, a);
+      });
+    } catch (err) { body.textContent = "사진을 불러오지 못했어요: " + (err.code || err.message); }
+  }
+  const list = $("orderList");
+  if (list) {
+    const MARK = /\[사진 (\d)장\]/;
+    const decorate = () => {
+      list.querySelectorAll("tbody tr").forEach(tr => {
+        if (tr.dataset.phDone) return;
+        const w = document.createTreeWalker(tr, NodeFilter.SHOW_TEXT); let node, m = null;
+        while ((node = w.nextNode())) { m = MARK.exec(node.nodeValue); if (m) break; }
+        if (!m) return;
+        const chk = tr.querySelector("[data-del]"); if (!chk) return;
+        tr.dataset.phDone = "1";
+        node.nodeValue = node.nodeValue.replace(MARK, "").trim() || "-";
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "btn sub"; b.dataset.phOrder = chk.dataset.del; b.style.marginTop = "4px";
+        b.textContent = "📷 사진 " + m[1] + "장 보기";
+        node.parentNode.appendChild(b);
+      });
+    };
+    new MutationObserver(decorate).observe(list, { childList: true, subtree: true });
+    list.addEventListener("click", e => { const b = e.target.closest("[data-ph-order]"); if (b) open(b.dataset.phOrder); });
+  }
+}
+
+
 /* ---------- 사장님 탭 분리: 🌷 오늘 판매 꽃 / 📋 주문서·매입 체크표 ---------- */
 {
   const ownBody = $("ownerBody"), saleBox = $("saleBox");
@@ -276,6 +502,320 @@ input.qin{-moz-appearance:textfield;appearance:textfield;text-align:center}
     if (auth) onAuthStateChanged(auth, gate);
     $("saleGoLogin").addEventListener("click", () => ownBtn.click());
   }
+}
+
+/* ---------- 📦 재고확인 (속 단위): 보유 속 입력 → 접수 주문과 비교 ---------- */
+{
+  const ownSec = $('owner');
+  const ownBtn = ownSec ? document.querySelector('nav button[data-tab=owner]') : null;
+  if (ownSec && ownBtn && auth) {
+    const css = document.createElement('style');
+    css.textContent = '.srow{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:14px}.srow b{font-size:20px}.sst{margin-top:10px;font-size:13px;font-weight:700;border-radius:10px;padding:7px 8px;text-align:center}.sst.ok{background:var(--green-l);color:var(--green)}.sst.bad{background:#fdeaea;color:var(--red)}';
+    document.head.appendChild(css);
+
+    const sec = document.createElement('section');
+    sec.id = 'stockTab';
+    sec.innerHTML = `
+      <div id='stockGate' class='empty'>🔒 사장님 로그인이 필요해요.<br><button type='button' class='btn' id='stockGoLogin' style='margin-top:10px'>로그인하러 가기</button></div>
+      <div id='stockWrap' style='display:none'>
+        <p class='note' style='margin-top:0'>남은 꽃 수량과 부족 수량을 확인해요. 모두 <b>속</b> 단위입니다.</p>
+        <div class='bar'>
+          <input type='search' id='stockKw' name='stockSearch' autocomplete='off' placeholder='꽃 이름으로 검색 (예: 장미, 국화)' style='flex:1;min-width:180px'>
+          <label style='font-size:13px;cursor:pointer'><input type='checkbox' id='stockAll' style='width:18px;height:18px;vertical-align:middle'> 주문 없는 꽃도 보기</label>
+          <button type='button' class='btn green' id='stockReload'>🔄 새로고침</button>
+        </div>
+        <div id='stockSum' style='margin-bottom:10px;font-size:14px'></div>
+        <div id='stockMsg' class='msg'></div>
+        <div id='stockGrid' class='grid'></div>
+        <p class='note'>※ 주문(속) = 접수된 주문 수량(송이)을 1속 송이 수로 나눠 올림한 값, 부족(속) = 주문 − 보유입니다. 1속 송이 수는 market.json의 값을 쓰고, 없으면 10송이로 계산합니다.<br>매입으로 늘어난 재고는 보유 칸에 직접 입력하세요. 입력한 값은 자동으로 저장됩니다.</p>
+      </div>`;
+    ownSec.before(sec);
+
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.dataset.tab = 'stockTab'; btn.textContent = '📦 재고확인 🔒';
+    ownBtn.before(btn);
+
+    const FX = import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    let stockOrders = [], mkt = {}, have = {}, stockOrder = [], loaded = false, saveTimer = null;
+
+    const num = v => { v = Math.floor(Number(v)); return v > 0 ? Math.min(v, 9999) : 0; };
+    const perOf = n => { const p = Number(mkt[n] && mkt[n].perBunch); return p > 0 ? p : 10; };
+    const demandMap = () => {
+      const d = {};
+      stockOrders.forEach(o => (o.items || []).forEach(it => {
+        const n = String(it.name || it.id || '').trim(); const q = Number(it.qty) || 0;
+        if (n && q > 0) d[n] = (d[n] || 0) + q;
+      }));
+      return d;
+    };
+    const nameSet = () => {
+      const s = new Set(Object.keys(demandMap()));
+      Object.keys(have).forEach(n => { if (num(have[n]) > 0) s.add(n); });
+      if ($('stockAll').checked) Object.keys(mkt).forEach(n => s.add(n));
+      return s;
+    };
+    const calc = n => {
+      const per = perOf(n), d = demandMap()[n] || 0, ord = Math.ceil(d / per), h = num(have[n]);
+      return { n, per, d, ord, h, short: Math.max(0, ord - h), spare: Math.max(0, h - ord) };
+    };
+    const sortOrder = () => {
+      stockOrder = [...nameSet()].map(calc).sort((a, b) => b.short - a.short || a.n.localeCompare(b.n, 'ko')).map(r => r.n);
+    };
+    const card = r => {
+      const n = esc(r.n);
+      const status = r.short > 0
+        ? `<div class='sst bad'>필요한 꽃 수량 ${r.short}속</div>`
+        : `<div class='sst ok'>재고 충분 · 여유 ${r.spare}속</div>`;
+      return `<div class='card'><h3>${n}</h3><div class='note'>1속 = ${r.per}송이 · 접수 주문 ${r.d}송이</div>
+        <div class='srow'><span>보유 (속)</span><div class='q stp'><button type='button' data-ssm='${n}' aria-label='${n} 보유 줄이기'>−</button><input type='number' class='qin' min='0' max='9999' step='1' inputmode='numeric' data-sin='${n}' value='${r.h}' aria-label='${n} 보유(속)'><button type='button' data-ssp='${n}' aria-label='${n} 보유 늘리기'>＋</button></div></div>
+        <div class='srow'><span>주문 (속)</span><b>${r.ord}</b></div>
+        <div class='srow'><span>부족 (속)</span><b style='color:${r.short > 0 ? 'var(--red)' : 'var(--mute)'}'>${r.short > 0 ? '+' : ''}${r.short}</b></div>
+        ${status}</div>`;
+    };
+    const renderStock = () => {
+      const names = [...nameSet()];
+      names.sort((a, b) => { const ia = stockOrder.indexOf(a), ib = stockOrder.indexOf(b); return (ia < 0 ? 9999 : ia) - (ib < 0 ? 9999 : ib); });
+      let rows = names.map(calc);
+      const shortCnt = rows.filter(r => r.short > 0).length;
+      const shortSum = rows.reduce((s, r) => s + r.short, 0);
+      $('stockSum').innerHTML = rows.length ? `부족 <b style='color:var(--red)'>${shortCnt}종</b> / 총 ${rows.length}종 · 부족 합계 ${shortSum}속` : '';
+      const kw = $('stockKw').value.trim();
+      if (kw) rows = rows.filter(r => r.n.includes(kw));
+      $('stockGrid').innerHTML = rows.length ? rows.map(card).join('') : `<div class='empty' style='grid-column:1/-1'>접수된 주문이 없어요.<br>「주문 없는 꽃도 보기」를 켜면 모든 꽃의 보유량을 미리 입력할 수 있어요.</div>`;
+    };
+
+    const loadStock = async () => {
+      const u = auth.currentUser; if (!u) return;
+      const m = $('stockMsg'); m.className = 'msg'; m.textContent = '불러오는 중…';
+      const F = await FX;
+      try {
+        const oSnap = await F.getDocs(F.query(F.collection(db, 'orders'), F.where('shopId', '==', u.uid)));
+        stockOrders = oSnap.docs.map(d => d.data());
+      } catch (err) {
+        console.error(err); m.className = 'msg err'; m.textContent = '주문을 불러오지 못했어요: ' + (err.code || err.message); return;
+      }
+      let warn = '';
+      try {
+        const sSnap = await F.getDoc(F.doc(db, 'stocks', u.uid));
+        have = (sSnap.exists() && sSnap.data().stock) || {};
+      } catch (err) {
+        console.error(err); have = {};
+        warn = '보유 수량 저장소를 읽지 못했어요(' + (err.code || err.message) + '). Firestore 규칙에 stocks를 추가했는지 확인하세요.';
+      }
+      try {
+        const r = await fetch('market.json?v=' + Date.now());
+        const j = r.ok ? await r.json() : null;
+        mkt = (j && j.items) || {};
+      } catch (e) { mkt = {}; }
+      loaded = true;
+      m.className = warn ? 'msg err' : 'msg'; m.textContent = warn;
+      sortOrder(); renderStock();
+    };
+
+    const scheduleSave = () => {
+      clearTimeout(saveTimer);
+      const m = $('stockMsg'); m.className = 'msg'; m.textContent = '저장 중…';
+      saveTimer = setTimeout(async () => {
+        const u = auth.currentUser; if (!u) return;
+        try {
+          const F = await FX; const clean = {};
+          Object.keys(have).forEach(n => { if (num(have[n]) > 0) clean[n] = num(have[n]); });
+          await F.setDoc(F.doc(db, 'stocks', u.uid), { stock: clean, updatedAt: F.serverTimestamp() });
+          m.className = 'msg'; m.textContent = '저장했어요.';
+        } catch (err) {
+          console.error(err); m.className = 'msg err'; m.textContent = '저장 실패: ' + (err.code || err.message);
+        }
+      }, 700);
+    };
+
+    $('stockGrid').addEventListener('click', e => {
+      const t = e.target; const n = t.dataset.ssm || t.dataset.ssp; if (!n) return;
+      const cur = num(have[n]);
+      have[n] = t.dataset.ssp ? Math.min(9999, cur + 1) : Math.max(0, cur - 1);
+      renderStock(); scheduleSave();
+    });
+    $('stockGrid').addEventListener('change', e => {
+      const n = e.target.dataset.sin; if (!n) return;
+      have[n] = num(e.target.value); renderStock(); scheduleSave();
+    });
+    $('stockKw').addEventListener('input', renderStock);
+    $('stockAll').addEventListener('change', () => { sortOrder(); renderStock(); });
+    $('stockReload').addEventListener('click', loadStock);
+    $('stockGoLogin').addEventListener('click', () => ownBtn.click());
+    btn.addEventListener('click', () => { if (auth.currentUser) loadStock(); });
+
+    const gate = u => {
+      $('stockGate').style.display = u ? 'none' : 'block';
+      $('stockWrap').style.display = u ? 'block' : 'none';
+      if (u && !loaded) loadStock();
+      if (!u) { loaded = false; have = {}; stockOrders = []; }
+    };
+    gate(auth.currentUser);
+    onAuthStateChanged(auth, gate);
+  }
+}
+
+/* ---------- ⏰ 예약 시간: 주문서에 시간 선택 추가, 사장님 주문 목록에 수령 날짜+시간 표시 ---------- */
+{
+  /* 시간은 추가 요청사항 앞에 [예약 14:00] 형태로 붙여 저장하고, 사장님 목록에서 다시 분리해 보여 줍니다 */
+  const parseMark = s => { s = String(s || ''); return (s.startsWith('[예약 ') && s[9] === ']' && s[6] === ':') ? { time: s.slice(4, 9), rest: s.slice(10).trim() } : null; };
+  const form = $('orderForm'), reqEl = $('oReq');
+  if (form && reqEl) {
+    const slots = [];
+    for (let h = 9; h <= 20; h++) for (const m of [0, 30]) {
+      if (h === 20 && m === 30) continue;
+      const hh = String(h).padStart(2, '0'), mm = String(m).padStart(2, '0');
+      slots.push(`<option value='${hh}:${mm}'>${h < 12 ? '오전' : '오후'} ${h > 12 ? h - 12 : h}:${mm}</option>`);
+    }
+    const row = document.createElement('div');
+    row.className = 'fr'; row.id = 'oTimeRow';
+    row.innerHTML = `<label class='t' for='oTime'>예약 시간</label><select id='oTime' name='pickupTime' style='padding:9px 12px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:#fff;font-family:inherit'><option value=''>시간을 선택해 주세요</option>${slots.join('')}</select>`;
+    (reqEl.closest('.fr') || reqEl).before(row);
+
+    const prep = e => {
+      const t = $('oTime'); if (!t) return;
+      if (!t.value) {
+        e.preventDefault(); e.stopImmediatePropagation();
+        const sm = $('sendMsg'); if (sm) { sm.className = 'msg err'; sm.textContent = '예약 시간을 선택해 주세요.'; }
+        t.focus(); return;
+      }
+      const pm = parseMark(reqEl.value);
+      const base = pm ? pm.rest : reqEl.value;
+      const mk = '[예약 ' + t.value + '] ' + base;
+      reqEl.value = mk;
+      setTimeout(() => { if (reqEl.value === mk) reqEl.value = base; }, 1500);
+    };
+    document.addEventListener('submit', e => { if (e.target === form) prep(e); }, true);
+    document.addEventListener('click', e => {
+      const b = e.target.closest ? e.target.closest('button') : null;
+      if (b && form.contains(b) && b.type !== 'reset' && (b.type === 'submit' || b.textContent.includes('전달'))) prep(e);
+    }, true);
+    form.addEventListener('reset', () => { const t = $('oTime'); if (t) t.value = ''; });
+  }
+
+  const list = $('orderList');
+  if (list) {
+    const fix = () => {
+      obs.disconnect();
+      try {
+        list.querySelectorAll('table').forEach(tb => {
+          const ths = [...tb.querySelectorAll('thead th')];
+          const di = ths.findIndex(th => th.textContent.includes('수령 날짜'));
+          const ri = ths.findIndex(th => th.textContent.includes('추가 요청사항'));
+          const body = tb.querySelector('tbody');
+          if (di < 0 || !body) return;
+          if (!ths[di].textContent.includes('시간')) ths[di].textContent = '수령 날짜·시간';
+          const rows = [...body.querySelectorAll('tr')];
+          rows.forEach(tr => {
+            if (tr.dataset.tfix) return;
+            tr.dataset.tfix = '1';
+            const cb = tr.querySelector('[data-del]');
+            const o = cb ? orders.find(x => x._id === cb.dataset.del) : null;
+            const pm = o ? parseMark(o.request) : null;
+            tr.dataset.tkey = (o && o.pickupDate ? o.pickupDate : '') + ' ' + (pm ? pm.time : '99:99');
+            if (!pm) return;
+            const dc = tr.children[di]; if (dc) dc.innerHTML = esc(o.pickupDate || '-') + '<br><b>' + esc(pm.time) + '</b>';
+            const rc = ri >= 0 ? tr.children[ri] : null; if (rc) rc.textContent = pm.rest || '-';
+          });
+          const sorted = [...rows].sort((a, b) => (a.dataset.tkey || '').localeCompare(b.dataset.tkey || ''));
+          if (sorted.some((r, i) => r !== rows[i])) sorted.forEach(r => body.appendChild(r));
+        });
+      } finally {
+        obs.observe(list, { childList: true, subtree: true });
+      }
+    };
+    const obs = new MutationObserver(fix);
+    fix();
+  }
+}
+
+
+/* ---------- 디자인 1단계: Flora Lab 스타일 (색·글꼴·시작 화면·카드·푸터) ---------- */
+{
+  const lk = document.createElement("link");
+  lk.rel = "stylesheet";
+  lk.href = "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css";
+  document.head.appendChild(lk);
+
+  const st = document.createElement("style");
+  st.textContent = `
+:root{--pink:#e0607e;--pink-l:#fdebf0;--green:#3f8f6a;--green-l:#e8f4ee;--ink:#2a2730;--mute:#7b7683;--line:#eee6ea;--bg:#fbf8f6}
+body{font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);letter-spacing:-.01em}
+header{background:linear-gradient(135deg,#fde6ee 0%,#e9f4ee 100%);padding:26px 16px 18px}
+header h1{font-size:27px;letter-spacing:-.02em}
+nav{padding:10px 12px;box-shadow:0 1px 0 var(--line)}
+nav button{transition:background .15s,color .15s}
+nav button.on{box-shadow:0 4px 12px rgba(224,96,126,.28)}
+button.btn{border-radius:12px}
+input[type=text],input[type=email],input[type=password],input[type=number],input[type=tel],input[type=date],input[type=search],textarea{border-radius:12px}
+.chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.chip{white-space:nowrap;flex:0 0 auto;padding:6px 14px}
+.card{border-radius:18px;box-shadow:0 2px 12px rgba(60,40,50,.06);transition:box-shadow .15s}
+.card:hover{box-shadow:0 6px 18px rgba(60,40,50,.10)}
+.card img{border-radius:14px}
+.card h3{font-size:18px;letter-spacing:-.02em}
+.tag{padding:2px 10px}
+table{border-radius:14px}
+/* 시작 화면 */
+.hero{text-align:center;padding:34px 8px 22px}
+.hero .brand{display:inline-block;background:var(--pink-l);color:var(--pink);font-weight:700;font-size:13px;padding:4px 14px;border-radius:999px;margin-bottom:12px}
+.hero h2{margin:0 0 8px;font-size:28px;line-height:1.3;letter-spacing:-.03em}
+.hero p{margin:0;color:var(--mute);font-size:15px}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:8px}
+.hcard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:22px;padding:26px 24px;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(60,40,50,.06)}
+.hcard .hi{font-size:40px;line-height:1}
+.hcard b{font-size:21px;color:var(--ink)}
+.hcard small{font-size:14px;color:var(--mute)}
+.hcard.own{background:var(--green-l);border-color:#cfe6da}
+.ftr{text-align:center;color:var(--mute);font-size:12px;padding:26px 12px 34px}
+`;
+  document.head.appendChild(st);
+
+  const h1 = document.querySelector("header h1"), hp = document.querySelector("header p");
+  if (h1) h1.textContent = "🌸 Flora Lab";
+  if (hp) hp.textContent = "주문내역·재고·매입을 한곳에서";
+  document.title = "Flora Lab · 꽃집 주문·재고관리";
+  const kwEl = $("kw");
+  if (kwEl) kwEl.placeholder = "키워드로 검색 (예: 노랑, 풍성한, 귀여운)";
+
+  /* 시작 화면: 주문하기 / 재고관리 */
+  const home = document.createElement("section");
+  home.id = "home";
+  home.innerHTML = `
+    <div class="hero">
+      <div class="brand">Flora Lab</div>
+      <h2>주문내역·재고·매입을<br>한곳에서</h2>
+      <p>원하는 꽃을 골라 간편하게 주문하세요</p>
+    </div>
+    <div class="hgrid">
+      <button type="button" class="hcard" id="goOrder"><span class="hi">🌷</span><b>주문하기</b><small>원하는 꽃을 골라 간편하게 주문</small></button>
+      <button type="button" class="hcard own" id="goOwner"><span class="hi">📋</span><b>재고관리</b><small>사장님 전용 · 로그인이 필요해요</small></button>
+    </div>`;
+  document.querySelector("main").prepend(home);
+
+  const nav = document.querySelector("nav");
+  const homeBtn = document.createElement("button");
+  homeBtn.type = "button"; homeBtn.dataset.tab = "home"; homeBtn.textContent = "🏠 처음";
+  nav.prepend(homeBtn);
+
+  /* 처음에는 시작 화면만 보이게 */
+  document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === "home"));
+  nav.querySelectorAll("button").forEach(b => b.classList.toggle("on", b === homeBtn));
+
+  $("goOrder").addEventListener("click", () => {
+    const b = nav.querySelector('button[data-tab]:not([data-tab="home"])');
+    if (b) b.click();
+  });
+  $("goOwner").addEventListener("click", () => {
+    const sec = $("ownerBody") ? $("ownerBody").closest("section") : null;
+    const b = sec ? nav.querySelector(`button[data-tab="${sec.id}"]`) : null;
+    if (b) b.click();
+  });
+
+  const ft = document.createElement("footer");
+  ft.className = "ftr";
+  ft.textContent = "© 2026 Flora Lab · 꽃집 주문·재고관리 시스템";
+  document.body.appendChild(ft);
 }
 
 /* ---------- 탭 ---------- */
@@ -824,6 +1364,37 @@ $("csvBtn").addEventListener("click", () => {
   }
   new MutationObserver(fix).observe(box, {childList:true, subtree:true});
   fix();
+})();
+
+/* 포장 형태 선택 시 위쪽에 사진 표시 (사진은 저장소 images 폴더에 아래 이름으로 올리기) */
+(function(){
+  const PACK = {
+    "꽃다발":   {img:"images/pack-bouquet.jpg",      em:"🌷"},
+    "꽃바구니": {img:"images/pack-basket.jpg",       em:"💐"},
+    "센터피스": {img:"images/pack-centerpiece.jpg",  em:"🪴"}
+  };
+  const prev = document.getElementById("packPrev");
+  const form = document.getElementById("orderForm");
+  if(!prev || !form) return;
+  function holder(text, em){
+    prev.textContent = "";
+    if(em){ const e = document.createElement("div"); e.className = "pkem"; e.textContent = em; prev.appendChild(e); }
+    const t = document.createElement("div"); t.textContent = text; prev.appendChild(t);
+  }
+  function show(){
+    const r = form.querySelector('input[name="oKind"]:checked');
+    if(!r || !PACK[r.value]){ holder("포장 형태를 선택하면 사진이 보여요", "🌸"); return; }
+    const p = PACK[r.value];
+    const img = new Image();
+    img.alt = r.value + " 예시 사진";
+    img.onerror = () => holder(r.value + " (사진 준비 중)", p.em);
+    img.src = p.img;
+    prev.textContent = "";
+    prev.appendChild(img);
+  }
+  form.addEventListener("change", e => { if(e.target && e.target.name === "oKind") show(); });
+  form.addEventListener("reset", () => setTimeout(show, 0));
+  show();
 })();
 
 /* ---------- 시작 ---------- */
