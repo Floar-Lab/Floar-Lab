@@ -1748,14 +1748,30 @@ window.addEventListener("pageshow", clearKw);
 #resvView .rv-stat.mk{background:#8fc47f}
 #resvView .rv-stat.done{background:#444;color:#fff}
 #resvView .rv-empty{text-align:center;padding:40px 0;color:#2f3a31}
-@media(max-width:600px){#resvView h1{font-size:32px}#resvView .rv-row{flex-wrap:wrap}#resvView .rv-time{flex-basis:64px}#resvView .rv-pill{margin-left:14px}}`;
+@media(max-width:600px){#resvView h1{font-size:32px}#resvView .rv-row{flex-wrap:wrap}#resvView .rv-time{flex-basis:64px}#resvView .rv-pill{margin-left:14px}}
+#resvView .rc-head{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 10px}
+#resvView .rc-head h1{margin:0;font-size:36px}
+#resvView .rc-nav{width:42px;height:42px;border-radius:50%;border:2px solid #222;background:var(--cream);font-size:22px;font-weight:800;cursor:pointer;line-height:1}
+#resvView .rc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:var(--cream);border-radius:16px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.15);margin-bottom:10px}
+#resvView .rc-dow{text-align:center;font-size:13px;font-weight:800;padding:4px 0;color:#2f3a31}
+#resvView .rc-dow.sun,#resvView .rc-day.sun b{color:#c0392b}
+#resvView .rc-dow.sat,#resvView .rc-day.sat b{color:#2d5fa8}
+#resvView .rc-day{min-height:62px;border:1px solid transparent;border-radius:12px;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;padding:6px 2px}
+#resvView .rc-day b{font-size:18px}
+#resvView .rc-day i{font-style:normal;font-size:11px;font-weight:700;background:var(--dark);color:#fff;border-radius:999px;padding:0 8px}
+#resvView .rc-day:hover{background:#e3eadf}
+#resvView .rc-day.today{border-color:#222}
+#resvView .rc-day.on{background:var(--dark);box-shadow:0 3px 8px rgba(0,0,0,.25)}
+#resvView .rc-day.on b{color:#fff}
+#resvView .rc-day.on i{background:#fff;color:#1f3a28}
+@media(max-width:600px){#resvView .rc-day{min-height:52px;padding:4px 0}#resvView .rc-day b{font-size:15px}#resvView .rc-head h1{font-size:28px}}`;
   document.head.appendChild(st);
 
   const nav = document.querySelector('nav');
   const btn = document.createElement('button'); btn.id = 'resvBtn'; btn.type = 'button'; btn.textContent = '📅 예약 확인';
   nav.insertBefore(btn, document.querySelector('nav button[data-tab="cart"]'));
   const v = document.createElement('div'); v.id = 'resvView';
-  v.innerHTML = '<div class="rv-top"><b>Flora Lab</b><button type="button" class="btn sub" id="rvClose">‹ 닫기</button></div><div class="rv-wrap"><h1 id="rvMonth"></h1><div class="rv-days" id="rvDays"></div><div class="note" style="text-align:center">좌우로 밀어서 다른 날짜의 예약을 확인하세요 · 상태 버튼을 누르면 바뀝니다</div><div id="rvList"></div></div>';
+  v.innerHTML = '<div class="rv-top"><b>Flora Lab</b><button type="button" class="btn sub" id="rvClose">‹ 닫기</button></div><div class="rv-wrap"><div class="rc-head"><button type="button" class="rc-nav" id="rvPrev">‹</button><h1 id="rvMonth"></h1><button type="button" class="rc-nav" id="rvNext">›</button></div><div class="rc-grid" id="rvDays"></div><div class="note" style="text-align:center;margin-bottom:10px">날짜를 누르면 아래에 그날 예약이 나와요 · 상태 버튼을 누르면 바뀝니다</div><div id="rvList"></div></div>';
   document.body.appendChild(v);
   const $ = id => document.getElementById(id);
 
@@ -1764,6 +1780,7 @@ window.addEventListener("pageshow", clearKw);
   const ymd = d => d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
   const STAT = ['제작 대기','제작 중','완료'], CLS = ['','mk','done'];
   let orders = [], sel = ymd(new Date()), unsub = null;
+  let vm = new Date(); vm.setDate(1);
 
   function qtyOf(items){
     let s = 0;
@@ -1782,23 +1799,21 @@ window.addEventListener("pageshow", clearKw);
   function render(){
     const by = {};
     orders.forEach(o => { if(o.pickupDate) (by[o.pickupDate] = by[o.pickupDate] || []).push(o); });
-    const set = new Set(Object.keys(by));
-    const today = new Date();
-    for(let i = -2; i < 12; i++){ const d = new Date(today); d.setDate(d.getDate() + i); set.add(ymd(d)); }
-    const days = [...set].sort();
-    if(!set.has(sel)) sel = ymd(today);
-    const sd = new Date(sel + 'T00:00:00');
-    $('rvMonth').textContent = (sd.getMonth()+1) + '월';
+    const y = vm.getFullYear(), m = vm.getMonth();
+    $('rvMonth').textContent = y + '년 ' + (m+1) + '월';
     const box = $('rvDays'); box.textContent = '';
-    days.forEach(k => {
-      const d = new Date(k + 'T00:00:00'), c = (by[k] || []).length;
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'rv-day' + (k === sel ? ' on' : '');
-      const dow = d.getDay();
-      b.innerHTML = '<small class="' + (dow===0?'sun':dow===6?'sat':'') + '">' + DAY[dow] + '요일</small><b>' + d.getDate() + '일</b><i>' + c + '건</i>';
+    DAY.forEach((n, i) => { const h = document.createElement('div'); h.className = 'rc-dow' + (i===0?' sun':i===6?' sat':''); h.textContent = n; box.appendChild(h); });
+    const first = new Date(y, m, 1).getDay(), last = new Date(y, m+1, 0).getDate(), todayK = ymd(new Date());
+    for(let i = 0; i < first; i++){ const e = document.createElement('div'); box.appendChild(e); }
+    for(let d = 1; d <= last; d++){
+      const k = y + '-' + pad(m+1) + '-' + pad(d), c = (by[k] || []).length, dow = new Date(y, m, d).getDay();
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = 'rc-day' + (k===sel?' on':'') + (k===todayK?' today':'') + (dow===0?' sun':dow===6?' sat':'');
+      b.innerHTML = '<b>' + d + '</b>' + (c ? '<i>' + c + '건</i>' : '');
       b.addEventListener('click', () => { sel = k; render(); });
       box.appendChild(b);
-    });
-    const on = box.querySelector('.on'); if(on) on.scrollIntoView({inline:'center', block:'nearest'});
+    }
+    const sd = new Date(sel + 'T00:00:00');
 
     const list = (by[sel] || []).map(o => ({ o, i: info(o) })).sort((a,b) => (a.i.time || '99').localeCompare(b.i.time || '99'));
     const L = $('rvList'); L.textContent = '';
@@ -1845,8 +1860,21 @@ window.addEventListener("pageshow", clearKw);
     btn.classList.toggle('show', !!u);
     if(u) start(u.uid); else v.classList.remove('on');
   });
-  btn.addEventListener('click', () => { sel = ymd(new Date()); v.classList.add('on'); document.body.style.overflow = 'hidden'; render(); });
+  btn.addEventListener('click', () => { sel = ymd(new Date()); vm = new Date(); vm.setDate(1); v.classList.add('on'); document.body.style.overflow = 'hidden'; render(); });
   $('rvClose').addEventListener('click', () => { v.classList.remove('on'); document.body.style.overflow = ''; });
+  $('rvPrev').addEventListener('click', () => { vm = new Date(vm.getFullYear(), vm.getMonth()-1, 1); render(); });
+  $('rvNext').addEventListener('click', () => { vm = new Date(vm.getFullYear(), vm.getMonth()+1, 1); render(); });
+
+  /* 상단바 순서: 주문하기 · 오늘 판매 꽃 · 재고확인 · 주문서/매입 체크표 · 예약 확인 · 장바구니 */
+  const ORD = [['주문하기',2],['판매',3],['재고',4],['주문서',5],['매입',5],['예약',6],['장바구니',9]];
+  function sortNav(){
+    nav.querySelectorAll('button').forEach(b => {
+      const t = b.textContent, hit = ORD.find(([k]) => t.includes(k));
+      b.style.order = hit ? hit[1] : 7;
+    });
+  }
+  new MutationObserver(sortNav).observe(nav, {childList:true});
+  sortNav();
 })();
 </script>
 </body>
