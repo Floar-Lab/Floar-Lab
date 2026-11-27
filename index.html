@@ -1869,11 +1869,13 @@ window.addEventListener("pageshow", clearKw);
   const ORD = [['주문하기',2],['판매',3],['재고',4],['주문서',5],['매입',5],['예약',6],['장바구니',9]];
   function sortNav(){
     nav.querySelectorAll('button').forEach(b => {
+      const w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
+      let n; while((n = w.nextNode())){ if(n.nodeValue.includes('🔒')) n.nodeValue = n.nodeValue.replace(/\s*🔒\s*/g, ' ').trim() + ' '; }
       const t = b.textContent, hit = ORD.find(([k]) => t.includes(k));
       b.style.order = hit ? hit[1] : 7;
     });
   }
-  new MutationObserver(sortNav).observe(nav, {childList:true});
+  new MutationObserver(sortNav).observe(nav, {childList:true, subtree:true, characterData:true});
   sortNav();
 })();
 </script>
